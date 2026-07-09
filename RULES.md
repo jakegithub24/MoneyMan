@@ -1,0 +1,25 @@
+# 3. RULES & DEVELOPMENT GUIDELINES
+
+- **Code Quality**
+  - Dart/Flutter: follow effective Dart style, use `analysis_options.yaml` (strict).
+  - Python: type hints, Pydantic models for validation, black formatting.
+  - Commit messages: Conventional Commits (`feat:`, `fix:`, `docs:`, etc.).
+- **Branching Strategy**
+  - `main` – production‑ready, protected.
+  - `develop` – integration branch.
+  - Feature branches: `feat/description`, `fix/bug‑description`.
+- **Testing Requirements**
+  - Unit tests for all data layer functions (SQLite helpers, AI prompt builders).
+  - Widget tests for key UI components (transaction form, budget progress bar).
+  - Manual accessibility test with TalkBack / VoiceOver before release.
+- **Accessibility & Inclusivity**
+  - WCAG 2.1 AA contrast ratios.
+  - Text scaling support up to 200%.
+  - All actionable elements have semantic labels.
+  - No ageist or condescending tone; use encouraging language.
+- **Data Ethics**
+  - Never store raw transaction descriptions on the server (only embeddings/anonymized aggregates).
+  - Explicit user consent for any AI analysis, with a “what we do with your data” screen during onboarding.
+- **Documentation**
+  - Each PR must update relevant ADRs (Architecture Decision Records) if a new library or pattern is introduced.
+  - Keep `features.md` and this master plan updated as scope changes.
