@@ -1,0 +1,181 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+bin/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script, and may contain local paths
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or app, you might want to share your .python-version.
+#   According to (.gitignore_global), the following are preferred.
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if lock is generated on different OS it might fail.
+#   Pipfile.lock
+
+# poetry
+#   Poetry uses pyproject.toml to share dependencies, but lock files are recommended.
+#   poetry.lock
+
+# pdm
+#   PDM stores dependencies in __pypackages__
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyproject
+.spyproject/
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Flutter/Dart specific ignores
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/assets-pdf/
+/android/key.properties
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+/ios/Flutter/App.framework
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/assets/image_cache/
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp
+*~

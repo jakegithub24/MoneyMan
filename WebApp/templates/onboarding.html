@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>MoneyMan - Onboarding</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind Custom Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "income-green-subtle": "#E8F5E9",
+                        "expense-red-subtle": "#FBE9E7",
+                        "inverse-surface": "#2f3131",
+                        "on-secondary-fixed-variant": "#872100",
+                        "inverse-on-surface": "#f0f1f1",
+                        "surface-light": "#FFFFFF",
+                        "on-primary-fixed": "#002204",
+                        "on-tertiary-fixed-variant": "#643f00",
+                        "on-surface": "#1a1c1c",
+                        "surface-container-lowest": "#ffffff",
+                        "text-main-dark": "#F0F0F0",
+                        "secondary-fixed-dim": "#ffb5a0",
+                        "on-primary-container": "#cbffc2",
+                        "primary": "#0d631b",
+                        "surface-tint": "#1b6d24",
+                        "on-tertiary-container": "#ffeede",
+                        "surface-container-highest": "#e2e2e2",
+                        "text-main-light": "#1A1C1A",
+                        "on-error": "#ffffff",
+                        "surface-container": "#eeeeee",
+                        "secondary-container": "#fc5929",
+                        "on-surface-variant": "#40493d",
+                        "surface-container-high": "#e8e8e8",
+                        "on-secondary-container": "#541100",
+                        "on-tertiary-fixed": "#2a1800",
+                        "tertiary-container": "#986200",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#2e7d32",
+                        "outline-variant": "#bfcaba",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#dadada",
+                        "background": "#f9f9f9",
+                        "surface-dark": "#1E1E1E",
+                        "inverse-primary": "#88d982",
+                        "surface-variant": "#e2e2e2",
+                        "background-dark": "#121212",
+                        "on-secondary-fixed": "#3b0900",
+                        "on-primary-fixed-variant": "#005312",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#a3f69c",
+                        "surface-bright": "#f9f9f9",
+                        "surface": "#f9f9f9",
+                        "tertiary": "#774c00",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#b02e00",
+                        "outline": "#707a6c",
+                        "secondary-fixed": "#ffdbd1",
+                        "tertiary-fixed-dim": "#ffb957",
+                        "primary-fixed-dim": "#88d982",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1a1c1c",
+                        "tertiary-fixed": "#ffddb5",
+                        "surface-container-low": "#f3f3f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "container-margin": "20px",
+                        "gutter": "16px",
+                        "card-padding": "24px",
+                        "stack-md": "24px",
+                        "stack-lg": "40px",
+                        "touch-target-min": "48px",
+                        "stack-sm": "12px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .dark body {
+            background-color: #121212;
+            color: #f0f1f1;
+        }
+        .onboarding-screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .onboarding-screen.active {
+            display: flex;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-surface dark:bg-background-dark text-on-surface dark:text-text-main-dark font-body-md h-screen w-screen flex items-center justify-center m-0 p-0 overflow-hidden select-none">
+    
+    <!-- Mobile-like Frame Simulated for Onboarding -->
+    <main class="w-full h-full max-w-md bg-surface-container-lowest dark:bg-surface-dark mx-auto shadow-xl relative flex flex-col sm:h-[800px] sm:max-h-[95dvh] sm:rounded-[32px] sm:my-auto sm:border sm:border-outline-variant/30 overflow-hidden">
+        
+        <!-- Onboarding Header -->
+        <header class="flex justify-between items-center h-16 px-container-margin w-full bg-surface-container-lowest dark:bg-surface-dark z-50 shrink-0 border-b border-outline-variant/10">
+            <button aria-label="Go back" class="invisible w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors text-on-surface-variant dark:text-text-main-dark" id="backBtn">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+            </button>
+            <span class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed">MoneyMan</span>
+            <div class="w-12 h-12"></div> <!-- Spacer -->
+        </header>
+        
+        <!-- Forms block to wrap everything so developers can tie it to a POST endpoint -->
+        <form id="onboardingForm" method="POST" action="{{ submit_url | default('/onboarding/submit') }}" class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto overflow-x-hidden px-container-margin pb-stack-lg relative">
+                
+                <!-- Screen 1: Welcome -->
+                <section class="onboarding-screen active flex-col h-full justify-between pt-stack-lg" id="screen1">
+                    <div class="flex flex-col items-center text-center space-y-stack-md">
+                        <!-- Logo Icon -->
+                        <div class="w-28 h-28 rounded-3xl bg-income-green-subtle dark:bg-primary/20 flex items-center justify-center p-4 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                            <span class="material-symbols-outlined text-[64px] text-primary dark:text-primary-fixed" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                        </div>
+                        <div class="space-y-stack-sm mt-4">
+                            <h1 class="font-display-lg text-display-lg text-on-surface dark:text-text-main-dark">Your Money,<br/>Your Way.</h1>
+                            <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-outline max-w-[280px] mx-auto">
+                                Track expenses effortlessly and build better habits, one step at a time.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-stack-md mt-auto pb-stack-md pt-8">
+                        <!-- Privacy Consent Toggle -->
+                        <label class="flex items-start space-x-gutter p-card-padding bg-surface-container-low dark:bg-surface-container-high/40 rounded-xl cursor-pointer">
+                            <div class="flex items-center h-6">
+                                <input class="form-checkbox h-6 w-6 text-primary rounded border-outline-variant dark:border-outline focus:ring-primary focus:ring-opacity-50 transition duration-150 ease-in-out cursor-pointer" id="privacyToggle" required="" type="checkbox"/>
+                            </div>
+                            <div class="flex-1 pl-2">
+                                <p class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark">I agree to the Terms &amp; Privacy Policy.</p>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">We respect your privacy. All financial data is encrypted and saved locally on your device.</p>
+                            </div>
+                        </label>
+                        <!-- Next Action -->
+                        <button type="button" class="w-full h-touch-target-min bg-primary text-on-primary rounded-full font-label-lg text-label-lg flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:bg-surface-tint" disabled="" id="btnNext1">
+                            Get Started
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Screen 2: Persona Selection -->
+                <section class="onboarding-screen flex-col h-full pt-stack-md" id="screen2">
+                    <div class="space-y-stack-sm mb-stack-md text-center">
+                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Who are you?</h2>
+                        <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">We'll tailor budgets and insights to fit your profile.</p>
+                    </div>
+                    
+                    <div aria-labelledby="persona-label" class="flex flex-col space-y-gutter flex-1" role="radiogroup">
+                        <!-- Persona Option 1 -->
+                        <label class="persona-card flex items-center p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                            <input class="sr-only" name="persona" type="radio" value="student" required/>
+                            <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
+                                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">school</span>
+                            </div>
+                            <div class="flex-1 pl-2">
+                                <span class="block font-headline-md text-headline-md text-on-surface dark:text-text-main-dark">Student</span>
+                                <span class="block font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">Manage allowances &amp; study costs</span>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center shrink-0 check-indicator transition-all">
+                                <span class="material-symbols-outlined text-[16px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Persona Option 2 -->
+                        <label class="persona-card flex items-center p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                            <input class="sr-only" name="persona" type="radio" value="gig_worker"/>
+                            <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
+                                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">two_wheeler</span>
+                            </div>
+                            <div class="flex-1 pl-2">
+                                <span class="block font-headline-md text-headline-md text-on-surface dark:text-text-main-dark">Gig Worker</span>
+                                <span class="block font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">Track variable income &amp; fuel costs</span>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center shrink-0 check-indicator transition-all">
+                                <span class="material-symbols-outlined text-[16px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Persona Option 3 -->
+                        <label class="persona-card flex items-center p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                            <input class="sr-only" name="persona" type="radio" value="retired"/>
+                            <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
+                                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">chair_alt</span>
+                            </div>
+                            <div class="flex-1 pl-2">
+                                <span class="block font-headline-md text-headline-md text-on-surface dark:text-text-main-dark">Retired / Elderly</span>
+                                <span class="block font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">Monitor pensions &amp; medical bills</span>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center shrink-0 check-indicator transition-all">
+                                <span class="material-symbols-outlined text-[16px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div class="mt-auto pb-stack-md pt-4 bg-surface-container-lowest dark:bg-surface-dark">
+                        <button type="button" class="w-full h-touch-target-min bg-primary text-on-primary rounded-full font-label-lg text-label-lg flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:bg-surface-tint" disabled="" id="btnNext2">
+                            Continue
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Screen 3: Local Account Creation -->
+                <section class="onboarding-screen flex-col h-full pt-stack-md" id="screen3">
+                    <div class="space-y-stack-sm mb-stack-lg text-center">
+                        <div class="w-16 h-16 rounded-full bg-income-green-subtle dark:bg-primary/20 mx-auto flex items-center justify-center mb-4 text-primary dark:text-primary-fixed">
+                            <span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">lock</span>
+                        </div>
+                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Secure your data</h2>
+                        <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline px-4">Create a simple 4-digit PIN to keep your local financial data safe.</p>
+                    </div>
+                    
+                    <div class="space-y-stack-md flex-1">
+                        <!-- Hidden fields to hold final values -->
+                        <input type="hidden" name="pin" id="finalPin">
+                        
+                        <div class="flex flex-col space-y-4">
+                            <label class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark text-center" for="pinInput">Enter PIN</label>
+                            <!-- Custom PIN input dots, actual input hidden -->
+                            <div class="relative w-full max-w-[240px] mx-auto flex justify-between">
+                                <input aria-label="Enter 4 digit PIN" autocomplete="new-password" class="absolute inset-0 w-full h-full opacity-0 cursor-text z-10" id="pinInput" inputmode="numeric" maxlength="4" pattern="[0-9]*" type="password"/>
+                                <div class="w-12 h-14 bg-surface-container dark:bg-surface-container-high rounded-xl flex items-center justify-center border-2 border-transparent transition-all pin-digit" data-index="0">
+                                    <span class="text-2xl font-bold"></span>
+                                </div>
+                                <div class="w-12 h-14 bg-surface-container dark:bg-surface-container-high rounded-xl flex items-center justify-center border-2 border-transparent transition-all pin-digit" data-index="1">
+                                    <span class="text-2xl font-bold"></span>
+                                </div>
+                                <div class="w-12 h-14 bg-surface-container dark:bg-surface-container-high rounded-xl flex items-center justify-center border-2 border-transparent transition-all pin-digit" data-index="2">
+                                    <span class="text-2xl font-bold"></span>
+                                </div>
+                                <div class="w-12 h-14 bg-surface-container dark:bg-surface-container-high rounded-xl flex items-center justify-center border-2 border-transparent transition-all pin-digit" data-index="3">
+                                    <span class="text-2xl font-bold"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col space-y-4 pt-4">
+                            <label class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark text-center opacity-50 transition-opacity" for="pinConfirmInput" id="confirmLabel">Confirm PIN</label>
+                            <div class="relative w-full max-w-[240px] mx-auto flex justify-between opacity-50 transition-opacity pointer-events-none" id="confirmContainer">
+                                <input aria-label="Confirm 4 digit PIN" autocomplete="new-password" class="absolute inset-0 w-full h-full opacity-0 cursor-text z-10" id="pinConfirmInput" inputmode="numeric" maxlength="4" pattern="[0-9]*" type="password"/>
+                                <div class="w-12 h-14 bg-surface-container dark:bg-surface-container-high rounded-xl flex items-center justify-center border-2 border-transparent transition-all pin-digit-confirm" data-index="0">
+                                    <span class="text-2xl font-bold"></span>
+                                </div>
+                                <div class="w-12 h-14 bg-surface-container dark:bg-surface-container-high rounded-xl flex items-center justify-center border-2 border-transparent transition-all pin-digit-confirm" data-index="1">
+                                    <span class="text-2xl font-bold"></span>
+                                </div>
+                                <div class="w-12 h-14 bg-surface-container dark:bg-surface-container-high rounded-xl flex items-center justify-center border-2 border-transparent transition-all pin-digit-confirm" data-index="2">
+                                    <span class="text-2xl font-bold"></span>
+                                </div>
+                                <div class="w-12 h-14 bg-surface-container dark:bg-surface-container-high rounded-xl flex items-center justify-center border-2 border-transparent transition-all pin-digit-confirm" data-index="3">
+                                    <span class="text-2xl font-bold"></span>
+                                </div>
+                            </div>
+                            <p class="text-error text-label-sm font-label-sm text-center h-4 mt-1 opacity-0 transition-opacity" id="pinError">PINs do not match.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-auto pb-stack-md pt-4 bg-surface-container-lowest dark:bg-surface-dark">
+                        <button type="submit" class="w-full h-touch-target-min bg-primary text-on-primary rounded-full font-label-lg text-label-lg flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:bg-surface-tint" disabled="" id="btnFinish">
+                            <span class="mr-2">Start using MoneyMan</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+                </section>
+                
+            </div>
+        </form>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const screens = [
+                document.getElementById('screen1'),
+                document.getElementById('screen2'),
+                document.getElementById('screen3')
+            ];
+            let currentScreen = 0;
+            const backBtn = document.getElementById('backBtn');
+            
+            // Screen 1 Logic
+            const privacyToggle = document.getElementById('privacyToggle');
+            const btnNext1 = document.getElementById('btnNext1');
+
+            privacyToggle.addEventListener('change', (e) => {
+                btnNext1.disabled = !e.target.checked;
+            });
+
+            btnNext1.addEventListener('click', () => navigate(1));
+
+            // Screen 2 Logic
+            const personaRadios = document.querySelectorAll('input[name="persona"]');
+            const btnNext2 = document.getElementById('btnNext2');
+
+            personaRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    btnNext2.disabled = false;
+                    
+                    // Reset all check indicators
+                    document.querySelectorAll('.check-indicator').forEach(indicator => {
+                        indicator.classList.remove('bg-primary', 'border-primary');
+                        indicator.classList.add('border-outline-variant');
+                        indicator.querySelector('span').classList.add('opacity-0');
+                    });
+
+                    // Set active check indicator
+                    if (radio.checked) {
+                        const parent = radio.closest('label');
+                        const indicator = parent.querySelector('.check-indicator');
+                        indicator.classList.remove('border-outline-variant');
+                        indicator.classList.add('bg-primary', 'border-primary');
+                        indicator.querySelector('span').classList.remove('opacity-0');
+                    }
+                });
+            });
+
+            btnNext2.addEventListener('click', () => navigate(1));
+
+            // Screen 3 Logic (PIN)
+            const pinInput = document.getElementById('pinInput');
+            const pinConfirmInput = document.getElementById('pinConfirmInput');
+            const pinDigits = document.querySelectorAll('.pin-digit');
+            const pinConfirmDigits = document.querySelectorAll('.pin-digit-confirm');
+            const confirmContainer = document.getElementById('confirmContainer');
+            const confirmLabel = document.getElementById('confirmLabel');
+            const btnFinish = document.getElementById('btnFinish');
+            const pinError = document.getElementById('pinError');
+            const finalPinField = document.getElementById('finalPin');
+
+            function updateVisualPin(inputEl, digitEls) {
+                const val = inputEl.value;
+                digitEls.forEach((el, index) => {
+                    const span = el.querySelector('span');
+                    if (index < val.length) {
+                        span.textContent = '•';
+                        el.classList.add('border-primary', 'bg-surface-light', 'dark:bg-surface-dark');
+                        el.classList.remove('border-transparent', 'bg-surface-container', 'dark:bg-surface-container-high');
+                    } else {
+                        span.textContent = '';
+                        el.classList.remove('border-primary', 'bg-surface-light', 'dark:bg-surface-dark');
+                        el.classList.add('border-transparent', 'bg-surface-container', 'dark:bg-surface-container-high');
+                    }
+                });
+            }
+
+            pinInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+                updateVisualPin(pinInput, pinDigits);
+
+                if (e.target.value.length === 4) {
+                    confirmContainer.classList.remove('opacity-50', 'pointer-events-none');
+                    confirmLabel.classList.remove('opacity-50');
+                    pinConfirmInput.focus();
+                } else {
+                    confirmContainer.classList.add('opacity-50', 'pointer-events-none');
+                    confirmLabel.classList.add('opacity-50');
+                    pinConfirmInput.value = '';
+                    updateVisualPin(pinConfirmInput, pinConfirmDigits);
+                    btnFinish.disabled = true;
+                    pinError.classList.add('opacity-0');
+                }
+            });
+
+            pinConfirmInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+                updateVisualPin(pinConfirmInput, pinConfirmDigits);
+                
+                if (e.target.value.length === 4) {
+                    if (e.target.value === pinInput.value) {
+                        btnFinish.disabled = false;
+                        finalPinField.value = pinInput.value;
+                        pinError.classList.add('opacity-0');
+                    } else {
+                        btnFinish.disabled = true;
+                        pinError.classList.remove('opacity-0');
+                    }
+                } else {
+                    btnFinish.disabled = true;
+                    pinError.classList.add('opacity-0');
+                }
+            });
+
+            // Focus rings
+            pinInput.addEventListener('focus', () => {
+                pinDigits.forEach(d => { if (!d.querySelector('span').textContent) d.classList.add('ring-2', 'ring-primary-container', 'ring-opacity-20'); });
+            });
+            pinInput.addEventListener('blur', () => {
+                pinDigits.forEach(d => d.classList.remove('ring-2', 'ring-primary-container', 'ring-opacity-20'));
+            });
+            pinConfirmInput.addEventListener('focus', () => {
+                pinConfirmDigits.forEach(d => { if (!d.querySelector('span').textContent) d.classList.add('ring-2', 'ring-primary-container', 'ring-opacity-20'); });
+            });
+            pinConfirmInput.addEventListener('blur', () => {
+                pinConfirmDigits.forEach(d => d.classList.remove('ring-2', 'ring-primary-container', 'ring-opacity-20'));
+            });
+
+            // Form Submit Loading State
+            document.getElementById('onboardingForm').addEventListener('submit', (e) => {
+                btnFinish.disabled = true;
+                btnFinish.innerHTML = `<span class="material-symbols-outlined animate-spin text-[24px]">progress_activity</span>`;
+            });
+
+            // Navigation
+            function navigate(direction) {
+                screens[currentScreen].classList.remove('active');
+                currentScreen += direction;
+                
+                if (currentScreen > 0) {
+                    backBtn.classList.remove('invisible');
+                } else {
+                    backBtn.classList.add('invisible');
+                }
+
+                setTimeout(() => {
+                    screens[currentScreen].classList.add('active');
+                    if (currentScreen === 2) {
+                        pinInput.focus();
+                    }
+                }, 100);
+            }
+
+            backBtn.addEventListener('click', () => {
+                if (currentScreen > 0) {
+                    navigate(-1);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
