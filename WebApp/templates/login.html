@@ -67,10 +67,10 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-[#121212] dark:text-[#f0f1f1] min-h-screen flex flex-col justify-between p-6">
+<body class="bg-white dark:bg-[#1E1E1E] sm:bg-slate-50 sm:dark:bg-[#121212] text-slate-800 dark:text-[#f0f1f1] min-h-screen flex flex-col justify-between p-0 sm:p-6">
     
     <!-- Top Spacer / App branding -->
-    <header class="flex justify-center pt-8">
+    <header class="flex justify-center pt-8 sm:pt-8">
         <div class="flex items-center gap-2 text-primary dark:text-[#a3f69c]">
             <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
             <span class="font-bold text-2xl tracking-tight">MoneyMan</span>
@@ -78,7 +78,7 @@
     </header>
 
     <!-- Center Card -->
-    <main class="max-w-md w-full mx-auto bg-white dark:bg-[#1E1E1E] p-8 rounded-3xl border border-slate-200/50 dark:border-zinc-800/60 shadow-xl space-y-6 text-center">
+    <main class="max-w-md w-full mx-auto bg-transparent sm:bg-white sm:dark:bg-[#1E1E1E] p-4 sm:p-8 rounded-none sm:rounded-3xl border-none sm:border sm:border-slate-200/50 dark:sm:border-zinc-800/60 shadow-none sm:shadow-xl space-y-6 text-center">
         <div class="space-y-2">
             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Welcome Back, {{ username }}</h2>
             <p class="text-sm text-slate-500 dark:text-zinc-400">Enter your 4-digit PIN to unlock secure details</p>

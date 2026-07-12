@@ -140,10 +140,10 @@
 <body class="bg-surface dark:bg-background-dark text-on-surface dark:text-text-main-dark font-body-md h-screen w-screen flex items-center justify-center m-0 p-0 overflow-hidden select-none">
     
     <!-- Mobile-like Frame Simulated for Onboarding -->
-    <main class="w-full h-full max-w-md bg-surface-container-lowest dark:bg-surface-dark mx-auto shadow-xl relative flex flex-col sm:h-[800px] sm:max-h-[95dvh] sm:rounded-[32px] sm:my-auto sm:border sm:border-outline-variant/30 overflow-hidden">
+    <main class="w-screen sm:w-full h-full max-w-none sm:max-w-md bg-surface-container-lowest dark:bg-surface-dark mx-auto shadow-xl relative flex flex-col sm:h-[800px] sm:max-h-[95dvh] sm:rounded-[32px] sm:my-auto sm:border sm:border-outline-variant/30 overflow-hidden">
         
         <!-- Onboarding Header -->
-        <header class="flex justify-between items-center h-16 px-container-margin w-full bg-surface-container-lowest dark:bg-surface-dark z-50 shrink-0 border-b border-outline-variant/10">
+        <header class="flex justify-between items-center h-16 px-4 sm:px-container-margin w-full bg-surface-container-lowest dark:bg-surface-dark z-50 shrink-0 border-b border-outline-variant/10">
             <button aria-label="Go back" class="invisible w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors text-on-surface-variant dark:text-text-main-dark" id="backBtn">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
             </button>
@@ -155,10 +155,10 @@
         <form id="onboardingForm" method="POST" action="{{ submit_url | default('/onboarding') }}" class="flex-1 flex flex-col overflow-hidden">
             
             <!-- Content Area -->
-            <div class="flex-1 overflow-y-auto overflow-x-hidden px-container-margin pb-stack-lg relative">
+            <div class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-container-margin pb-6 sm:pb-stack-lg relative">
                 
                 <!-- Screen 1: Welcome -->
-                <section class="onboarding-screen active flex-col h-full justify-between pt-stack-lg" id="screen1">
+                <section class="onboarding-screen active flex-col min-h-full justify-between pt-6 sm:pt-stack-lg" id="screen1">
                     <div class="flex flex-col items-center text-center space-y-stack-md">
                         <!-- Logo Icon -->
                         <div class="w-28 h-28 rounded-3xl bg-income-green-subtle dark:bg-primary/20 flex items-center justify-center p-4 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
@@ -174,7 +174,7 @@
                     
                     <div class="space-y-stack-md mt-auto pb-stack-md pt-8">
                         <!-- Privacy Consent Toggle -->
-                        <label class="flex items-start space-x-gutter p-card-padding bg-surface-container-low dark:bg-surface-container-high/40 rounded-xl cursor-pointer">
+                        <label class="flex items-start space-x-gutter p-4 sm:p-card-padding bg-surface-container-low dark:bg-surface-container-high/40 rounded-xl cursor-pointer">
                             <div class="flex items-center h-6">
                                 <input class="form-checkbox h-6 w-6 text-primary rounded border-outline-variant dark:border-outline focus:ring-primary focus:ring-opacity-50 transition duration-150 ease-in-out cursor-pointer" id="privacyToggle" required="" type="checkbox"/>
                             </div>
@@ -191,7 +191,7 @@
                 </section>
                 
                 <!-- Screen 2: Persona Selection -->
-                <section class="onboarding-screen flex-col h-full pt-stack-md" id="screen2">
+                <section class="onboarding-screen flex-col min-h-full pt-4 sm:pt-stack-md" id="screen2">
                     <div class="space-y-stack-sm mb-stack-md text-center">
                         <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Who are you?</h2>
                         <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">We'll tailor budgets and insights to fit your profile.</p>
@@ -199,7 +199,7 @@
                     
                     <div aria-labelledby="persona-label" class="flex flex-col space-y-gutter flex-1" role="radiogroup">
                         <!-- Persona Option 1 -->
-                        <label class="persona-card flex items-center p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                        <label class="persona-card flex items-center p-4 sm:p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
                             <input class="sr-only" name="persona" type="radio" value="student" required/>
                             <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
                                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">school</span>
@@ -214,7 +214,7 @@
                         </label>
                         
                         <!-- Persona Option 2 -->
-                        <label class="persona-card flex items-center p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                        <label class="persona-card flex items-center p-4 sm:p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
                             <input class="sr-only" name="persona" type="radio" value="gig_worker"/>
                             <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
                                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">two_wheeler</span>
@@ -229,7 +229,7 @@
                         </label>
                         
                         <!-- Persona Option 3 -->
-                        <label class="persona-card flex items-center p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                        <label class="persona-card flex items-center p-4 sm:p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
                             <input class="sr-only" name="persona" type="radio" value="retired"/>
                             <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
                                 <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">chair_alt</span>
@@ -252,8 +252,8 @@
                 </section>
                 
                 <!-- Screen 3: Local Account Creation -->
-                <section class="onboarding-screen flex-col h-full pt-stack-md" id="screen3">
-                    <div class="space-y-stack-sm mb-stack-lg text-center">
+                <section class="onboarding-screen flex-col min-h-full pt-4 sm:pt-stack-md" id="screen3">
+                    <div class="space-y-stack-sm mb-6 sm:mb-stack-lg text-center">
                         <div class="w-16 h-16 rounded-full bg-income-green-subtle dark:bg-primary/20 mx-auto flex items-center justify-center mb-4 text-primary dark:text-primary-fixed">
                             <span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">lock</span>
                         </div>

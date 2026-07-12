@@ -104,12 +104,6 @@ def init_db():
     ''')
     
     conn.commit()
-    
-    # Check if we need to seed the data
-    cursor.execute("SELECT COUNT(*) FROM users")
-    if cursor.fetchone()[0] == 0:
-        seed_data(conn)
-        
     conn.close()
 
 def seed_data(conn):

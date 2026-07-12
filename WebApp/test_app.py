@@ -8,7 +8,7 @@ dummy_fd, dummy_path = tempfile.mkstemp()
 os.environ['DATABASE_PATH'] = dummy_path
 os.close(dummy_fd)
 
-from db import init_db, get_db_connection, verify_pin
+from db import init_db, get_db_connection, verify_pin, seed_data
 from app import app
 
 class MoneyManTestCase(unittest.TestCase):
@@ -34,6 +34,11 @@ class MoneyManTestCase(unittest.TestCase):
         conn.close()
         
         init_db()
+        
+        # Seed the test DB
+        conn = get_db_connection()
+        seed_data(conn)
+        conn.close()
         
         with self.client.session_transaction() as sess:
             sess['logged_in'] = True
