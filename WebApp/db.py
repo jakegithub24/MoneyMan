@@ -2,20 +2,27 @@ import sqlite3
 import os
 import hashlib
 import uuid
+from argon2 import PasswordHasher
 
 DATABASE_PATH = os.environ.get('DATABASE_PATH', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'moneyman.db'))
 
 def hash_pin(pin):
-    salt = uuid.uuid4().hex
-    hashed = hashlib.sha256(salt.encode() + pin.encode()).hexdigest()
-    return f"{salt}:{hashed}"
+    ph = PasswordHasher()
+    return ph.hash(pin)
 
 def verify_pin(pin, stored_val):
+    ph = PasswordHasher()
     try:
-        salt, hashed = stored_val.split(':')
-        return hashlib.sha256(salt.encode() + pin.encode()).hexdigest() == hashed
-    except (ValueError, AttributeError):
-        return False
+        # argon2 verification succeeds if no exception is raised
+        ph.verify(stored_val, pin)
+        return True
+    except Exception:
+        # Fallback to legacy salted sha256 to avoid breaking existing users or unit tests
+        try:
+            salt, hashed = stored_val.split(':')
+            return hashlib.sha256(salt.encode() + pin.encode()).hexdigest() == hashed
+        except Exception:
+            return False
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE_PATH)
@@ -33,9 +40,16 @@ def init_db():
             username TEXT NOT NULL,
             persona TEXT NOT NULL,
             pin TEXT NOT NULL,
-            is_onboarded INTEGER DEFAULT 0
+            is_onboarded INTEGER DEFAULT 0,
+            sync_enabled INTEGER DEFAULT 0
         )
     ''')
+    
+    # Safe migration for existing DBs
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN sync_enabled INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
     
     # Create Transactions table
     cursor.execute('''

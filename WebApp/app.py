@@ -12,6 +12,21 @@ app.secret_key = 'moneyman_secret_key_for_security_and_sessions'
 with app.app_context():
     init_db()
 
+@app.before_request
+def check_auth():
+    allowed_endpoints = ['onboarding', 'login', 'static']
+    if request.endpoint in allowed_endpoints:
+        return
+        
+    if not request.endpoint:
+        return
+        
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
 # Helper function to check if the user is onboarded
 def is_user_onboarded():
     conn = get_db_connection()
@@ -132,11 +147,124 @@ def onboarding():
         conn.commit()
         conn.close()
         
+        session['logged_in'] = True
         return redirect(url_for('dashboard'))
         
     if is_user_onboarded():
         return redirect(url_for('dashboard'))
     return render_template('onboarding.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    if session.get('logged_in'):
+        return redirect(url_for('dashboard'))
+        
+    error = None
+    if request.method == 'POST':
+        entered_pin = request.form.get('pin', '')
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+        conn.close()
+        
+        if user and verify_pin(entered_pin, user['pin']):
+            session['logged_in'] = True
+            return redirect(url_for('dashboard'))
+        else:
+            error = "Invalid security PIN. Please try again."
+            
+    profile = get_user_profile()
+    return render_template('login.html', error=error, username=profile['username'])
+
+@app.route('/lock')
+def lock():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    conn = get_db_connection()
+    conn.execute("DELETE FROM users")
+    conn.commit()
+    conn.close()
+    return redirect(url_for('onboarding'))
+
+@app.route('/settings')
+def settings():
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    profile = get_user_profile()
+    conn = get_db_connection()
+    user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+    conn.close()
+    
+    sync_enabled = user['sync_enabled'] == 1 if user else False
+    
+    success = request.args.get('success')
+    error = request.args.get('error')
+    
+    return render_template(
+        'settings.html',
+        username=profile['username'],
+        user_role=profile['user_role'],
+        sync_enabled=sync_enabled,
+        success=success,
+        error=error,
+        active_page='settings'
+    )
+
+@app.route('/settings/change-pin', methods=['POST'])
+def settings_change_pin():
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    current_pin = request.form.get('current_pin', '')
+    new_pin = request.form.get('new_pin', '')
+    confirm_pin = request.form.get('confirm_pin', '')
+    
+    conn = get_db_connection()
+    user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+    
+    if not user or not verify_pin(current_pin, user['pin']):
+        conn.close()
+        return redirect(url_for('settings', error="Current PIN is incorrect."))
+        
+    if new_pin != confirm_pin:
+        conn.close()
+        return redirect(url_for('settings', error="New PINs do not match."))
+        
+    if len(new_pin) != 4 or not new_pin.isdigit():
+        conn.close()
+        return redirect(url_for('settings', error="PIN must be exactly 4 digits."))
+        
+    hashed_pin = hash_pin(new_pin)
+    conn.execute("UPDATE users SET pin=? WHERE id=?", (hashed_pin, user['id']))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('settings', success="Security PIN updated successfully."))
+
+@app.route('/settings/update-sync', methods=['POST'])
+def settings_update_sync():
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    sync_enabled = 1 if request.form.get('sync_enabled') == 'true' or request.form.get('sync_enabled') == 'on' else 0
+    
+    conn = get_db_connection()
+    user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+    
+    if user:
+        conn.execute("UPDATE users SET sync_enabled=? WHERE id=?", (sync_enabled, user['id']))
+        conn.commit()
+    conn.close()
+    
+    status_str = "enabled" if sync_enabled == 1 else "disabled"
+    return redirect(url_for('settings', success=f"Online sync settings saved. Profile sync is now {status_str}."))
 
 @app.route('/dashboard')
 def dashboard():

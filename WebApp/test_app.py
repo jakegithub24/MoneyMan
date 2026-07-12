@@ -34,6 +34,9 @@ class MoneyManTestCase(unittest.TestCase):
         conn.close()
         
         init_db()
+        
+        with self.client.session_transaction() as sess:
+            sess['logged_in'] = True
 
     def tearDown(self):
         # Clear database connection and delete file
@@ -329,6 +332,64 @@ class MoneyManTestCase(unittest.TestCase):
         n2 = 180
         emi2 = p2 * r2 * ((1 + r2)**n2) / (((1 + r2)**n2) - 1)
         self.assertAlmostEqual(emi2, 4923.70, places=2)
+
+    def test_app_lock_and_unlock(self):
+        """Test application lock, redirection to login, and successful unlock."""
+        with self.client.session_transaction() as sess:
+            sess.pop('logged_in', None)
+            
+        response = self.client.get('/dashboard')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login', response.headers['Location'])
+        
+        response = self.client.post('/login', data={'pin': '1234'}, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Dashboard', response.data)
+        
+        with self.client.session_transaction() as sess:
+            self.assertTrue(sess.get('logged_in'))
+
+    def test_change_pin_settings(self):
+        """Test changing user security PIN from settings."""
+        response = self.client.post('/settings/change-pin', data={
+            'current_pin': '1234',
+            'new_pin': '9999',
+            'confirm_pin': '9999'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Security PIN updated successfully', response.data)
+        
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+        conn.close()
+        self.assertTrue(verify_pin('9999', user['pin']))
+        self.assertFalse(verify_pin('1234', user['pin']))
+
+    def test_update_sync_settings(self):
+        """Test enabling cloud sync settings."""
+        response = self.client.post('/settings/update-sync', data={
+            'sync_enabled': 'true'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Profile sync is now enabled', response.data)
+        
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+        conn.close()
+        self.assertEqual(user['sync_enabled'], 1)
+
+    def test_logout_profile_reset(self):
+        """Test that logout completely resets profile and redirects to onboarding."""
+        response = self.client.get('/logout', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Your Money', response.data)
+        
+        conn = get_db_connection()
+        user_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        conn.close()
+        self.assertEqual(user_count, 0)
 
 if __name__ == '__main__':
     unittest.main()
