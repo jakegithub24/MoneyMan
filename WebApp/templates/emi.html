@@ -60,7 +60,7 @@
                     <span class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline uppercase tracking-wider mb-1">Estimated Monthly EMI</span>
                     <div class="font-display-lg text-display-lg text-primary dark:text-primary-fixed font-extrabold" id="emiDisplay">₹12,560</div>
                     
-                    <button type="button" class="mt-4 w-full h-touch-target-min bg-primary text-on-primary font-label-lg text-label-lg rounded-full shadow-sm hover:bg-surface-tint transition-colors flex items-center justify-center gap-2">
+                    <button type="button" onclick="openSaveLoanModal()" class="mt-4 w-full h-touch-target-min bg-primary text-on-primary font-label-lg text-label-lg rounded-full shadow-sm hover:bg-surface-tint transition-colors flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined">add</span> 
                         <span>Save to Tracker</span>
                     </button>
@@ -169,6 +169,58 @@
         </div>
     </section>
 </div>
+
+<!-- Save EMI Loan Modal -->
+<div id="saveLoanModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-outline-variant/30 transition-transform duration-300 scale-95" id="loanModalContent">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-outline-variant/20 bg-surface-container-low dark:bg-surface-container-high/20">
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-text-main-dark">Save to Tracker</h3>
+            <button onclick="closeSaveLoanModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container text-on-surface-variant dark:text-text-main-dark">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <form method="POST" action="{{ create_emi_url | default('/emi/create') }}" class="p-6 space-y-5">
+            <!-- Hidden inputs pre-filled from calculator -->
+            <input type="hidden" name="amount" id="modalEmiAmount"/>
+            <input type="hidden" name="total_months" id="modalEmiTenure"/>
+            
+            <div class="flex flex-col gap-1.5">
+                <label class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark font-semibold" for="loanName">Loan Name</label>
+                <input id="loanName" name="name" type="text" placeholder="e.g. Car Loan" required
+                       class="w-full h-touch-target-min px-4 rounded-xl border border-outline-variant/30 bg-surface dark:bg-background-dark text-on-surface dark:text-text-main-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark font-semibold" for="loanBank">Bank / Lender</label>
+                <input id="loanBank" name="bank" type="text" placeholder="e.g. HDFC Bank" required
+                       class="w-full h-touch-target-min px-4 rounded-xl border border-outline-variant/30 bg-surface dark:bg-background-dark text-on-surface dark:text-text-main-dark focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 bg-surface-container-low dark:bg-background-dark p-4 rounded-xl">
+                <div>
+                    <span class="text-xs text-on-surface-variant dark:text-outline block">Monthly Payment</span>
+                    <span class="font-bold text-primary dark:text-primary-fixed" id="modalEmiVal">₹0</span>
+                </div>
+                <div>
+                    <span class="text-xs text-on-surface-variant dark:text-outline block">Tenure</span>
+                    <span class="font-bold text-on-surface dark:text-text-main-dark" id="modalTenureVal">0 Months</span>
+                </div>
+            </div>
+
+            <div class="flex gap-4 pt-2">
+                <button type="button" onclick="closeSaveLoanModal()" 
+                        class="flex-1 h-touch-target-min border border-outline-variant text-on-surface dark:text-text-main-dark font-label-lg text-label-lg rounded-full hover:bg-surface-container transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="flex-1 h-touch-target-min bg-primary text-on-primary font-label-lg text-label-lg rounded-full hover:bg-surface-tint transition-colors shadow-sm">
+                    Save Loan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
@@ -185,6 +237,8 @@
         const newTenureDisplay = document.getElementById('newTenureDisplay');
         const interestSavedDisplay = document.getElementById('interestSavedDisplay');
 
+        let calculatedEmi = 0;
+
         function calculateEMI() {
             const P = parseFloat(loanAmountInput.value) || 0;
             const annualRate = parseFloat(interestRateInput.value) || 0;
@@ -192,13 +246,15 @@
 
             if (P <= 0 || annualRate <= 0 || N <= 0) {
                 emiDisplay.textContent = '₹0';
+                calculatedEmi = 0;
                 return 0;
             }
 
             const R = (annualRate / 12) / 100; // monthly rate
             const emi = P * R * Math.pow(1 + R, N) / (Math.pow(1 + R, N) - 1);
             
-            emiDisplay.textContent = `₹${Math.round(emi).toLocaleString('en-IN')}`;
+            calculatedEmi = Math.round(emi);
+            emiDisplay.textContent = `₹${calculatedEmi.toLocaleString('en-IN')}`;
             return emi;
         }
 
@@ -246,6 +302,45 @@
             newTenureDisplay.textContent = `${months} Months`;
             interestSavedDisplay.textContent = `₹${Math.round(interestSaved).toLocaleString('en-IN')}`;
         }
+
+        // Save Loan modal bindings
+        window.openSaveLoanModal = function() {
+            const modal = document.getElementById('saveLoanModal');
+            const content = document.getElementById('loanModalContent');
+            
+            // Set calculated values into hidden fields
+            document.getElementById('modalEmiAmount').value = calculatedEmi;
+            document.getElementById('modalEmiTenure').value = parseInt(tenureInput.value) || 0;
+            
+            // Set values into visual display labels
+            document.getElementById('modalEmiVal').textContent = `₹${calculatedEmi.toLocaleString('en-IN')}`;
+            document.getElementById('modalTenureVal').textContent = `${tenureInput.value} Months`;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+                document.getElementById('loanName').focus();
+            }, 10);
+        }
+
+        window.closeSaveLoanModal = function() {
+            const modal = document.getElementById('saveLoanModal');
+            const content = document.getElementById('loanModalContent');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        // Close on outside click
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('saveLoanModal');
+            if (e.target === modal) {
+                closeSaveLoanModal();
+            }
+        });
 
         // Event Listeners
         [loanAmountInput, interestRateInput, tenureInput].forEach(input => {
