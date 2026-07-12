@@ -1,34 +1,34 @@
 {% extends "base.html" %}
-{% block title %}MoneyMan - Add Transaction{% endblock %}
+{% block title %}MoneyMan - Edit Transaction{% endblock %}
 
-{% set active_page = 'add_transaction' %}
+{% set active_page = 'transactions' %}
 
 {% block content %}
 <div class="max-w-xl mx-auto">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
-        <a href="{{ url_for('dashboard') if url_for else '/dashboard' }}" class="w-10 h-10 flex items-center justify-center text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors rounded-full -ml-2">
+        <a href="/transactions" class="w-10 h-10 flex items-center justify-center text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors rounded-full -ml-2">
             <span class="material-symbols-outlined">arrow_back</span>
         </a>
-        <h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-text-main-dark">New Transaction</h1>
+        <h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-text-main-dark">Edit Transaction</h1>
         <div class="w-10 h-10"></div> <!-- Balance spacer -->
     </div>
 
     <!-- Transaction Form -->
-    <form id="transactionForm" method="POST" action="{{ form_url | default('/transaction/add') }}" class="space-y-6">
+    <form id="transactionForm" method="POST" action="/transaction/edit/{{ tx.id }}" class="space-y-6">
         
         <!-- Type Toggle (Expense vs Income) -->
         <div class="bg-surface-container-high dark:bg-surface-container-highest p-1.5 rounded-full flex w-full relative">
             <!-- Hidden Input to store selection -->
-            <input type="hidden" name="type" id="transactionType" value="expense">
+            <input type="hidden" name="type" id="transactionType" value="{{ tx.type }}">
             
             <button type="button" id="toggleExpense" 
-                    class="flex-1 h-touch-target-min rounded-full flex items-center justify-center font-label-lg text-label-lg transition-all duration-300 bg-surface-light dark:bg-surface-dark shadow-sm text-secondary font-bold z-10 border border-outline-variant/10">
+                    class="flex-1 h-touch-target-min rounded-full flex items-center justify-center font-label-lg text-label-lg transition-all duration-300 {% if tx.type == 'expense' %} bg-surface-light dark:bg-surface-dark shadow-sm text-secondary font-bold z-10 border border-outline-variant/10 {% else %} text-on-surface-variant dark:text-outline hover:bg-surface-dim/40 z-10 {% endif %}">
                 Expense
             </button>
             
             <button type="button" id="toggleIncome" 
-                    class="flex-1 h-touch-target-min rounded-full flex items-center justify-center font-label-lg text-label-lg transition-all duration-300 text-on-surface-variant dark:text-outline hover:bg-surface-dim/40 z-10">
+                    class="flex-1 h-touch-target-min rounded-full flex items-center justify-center font-label-lg text-label-lg transition-all duration-300 {% if tx.type == 'income' %} bg-surface-light dark:bg-surface-dark shadow-sm text-primary font-bold z-10 border border-outline-variant/10 {% else %} text-on-surface-variant dark:text-outline hover:bg-surface-dim/40 z-10 {% endif %}">
                 Income
             </button>
         </div>
@@ -37,9 +37,9 @@
         <div class="flex flex-col items-center justify-center py-6 bg-surface-light dark:bg-surface-dark rounded-3xl shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] border border-outline-variant/20">
             <p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline mb-2">Amount</p>
             <div class="flex items-center justify-center relative w-full px-8">
-                <span id="currencySymbol" class="font-display-lg text-display-lg text-secondary opacity-80 mr-2">₹</span>
-                <input class="bg-transparent font-display-lg text-display-lg text-secondary dark:text-secondary-fixed w-full text-center border-none focus:ring-0 p-0 m-0 outline-none placeholder:text-surface-dim dark:placeholder:text-outline-variant font-bold" 
-                       id="amountInput" name="amount" inputmode="decimal" placeholder="0.00" required type="number" step="0.01" min="0.01" value=""/>
+                <span id="currencySymbol" class="font-display-lg text-display-lg {% if tx.type == 'income' %} text-primary {% else %} text-secondary {% endif %} opacity-80 mr-2">₹</span>
+                <input class="bg-transparent font-display-lg text-display-lg {% if tx.type == 'income' %} text-primary dark:text-primary-fixed {% else %} text-secondary dark:text-secondary-fixed {% endif %} w-full text-center border-none focus:ring-0 p-0 m-0 outline-none placeholder:text-surface-dim dark:placeholder:text-outline-variant font-bold" 
+                       id="amountInput" name="amount" inputmode="decimal" placeholder="0.00" required type="number" step="0.01" min="0.01" value="{{ tx.amount }}"/>
             </div>
         </div>
 
@@ -47,46 +47,29 @@
         <div class="space-y-3">
             <div class="flex items-center justify-between">
                 <h2 class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark font-bold">Category</h2>
-                <button type="button" class="font-label-sm text-label-sm text-primary dark:text-primary-fixed flex items-center gap-1">
-                    View All
-                    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                </button>
             </div>
             
             <!-- Hidden input for category value -->
-            <input type="hidden" name="category" id="selectedCategory" value="food">
+            <input type="hidden" name="category" id="selectedCategory" value="{{ tx.category }}">
             
             <div class="flex flex-wrap gap-3">
-                <!-- AI Suggested Category Target -->
-                <button type="button" data-category="food" class="category-chip pulse-soft h-touch-target-min px-4 rounded-full flex items-center gap-2 bg-income-green-subtle dark:bg-primary/20 border-2 border-primary text-primary font-label-lg text-label-lg transition-all">
-                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">restaurant</span>
-                    <span>Food</span>
-                    <div class="ml-1 px-2 py-0.5 rounded-full bg-primary text-white flex items-center gap-0.5">
-                        <span class="material-symbols-outlined text-[10px]">auto_awesome</span>
-                        <span class="text-[8px] uppercase tracking-wider font-bold">Suggested</span>
-                    </div>
-                </button>
+                {% set categories = [
+                    {'id': 'food', 'name': 'Food', 'icon': 'restaurant'},
+                    {'id': 'transport', 'name': 'Transport', 'icon': 'directions_bus'},
+                    {'id': 'rent', 'name': 'Rent', 'icon': 'house'},
+                    {'id': 'entertainment', 'name': 'Entertainment', 'icon': 'movie'},
+                    {'id': 'study', 'name': 'Study', 'icon': 'menu_book'},
+                    {'id': 'shopping', 'name': 'Shopping', 'icon': 'shopping_bag'},
+                    {'id': 'other', 'name': 'Other', 'icon': 'payments'}
+                ] %}
                 
-                <!-- Standard Categories -->
-                <button type="button" data-category="transport" class="category-chip h-touch-target-min px-4 rounded-full flex items-center gap-2 bg-surface-container-low dark:bg-surface-container-high/40 border border-outline-variant/30 text-on-surface dark:text-text-main-dark font-body-md text-body-md transition-colors hover:bg-surface-container dark:hover:bg-surface-container-high">
-                    <span class="material-symbols-outlined text-[20px] text-on-surface-variant dark:text-outline">directions_bus</span>
-                    <span>Transport</span>
+                {% for cat in categories %}
+                <button type="button" data-category="{{ cat.id }}" 
+                        class="category-chip h-touch-target-min px-4 rounded-full flex items-center gap-2 transition-all {% if tx.category == cat.id %} pulse-soft bg-income-green-subtle dark:bg-primary/20 border-2 border-primary text-primary font-label-lg text-label-lg {% else %} bg-surface-container-low dark:bg-surface-container-high/40 border border-outline-variant/30 text-on-surface dark:text-text-main-dark font-body-md text-body-md hover:bg-surface-container dark:hover:bg-surface-container-high {% endif %}">
+                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">{{ cat.icon }}</span>
+                    <span>{{ cat.name }}</span>
                 </button>
-                
-                <button type="button" data-category="rent" class="category-chip h-touch-target-min px-4 rounded-full flex items-center gap-2 bg-surface-container-low dark:bg-surface-container-high/40 border border-outline-variant/30 text-on-surface dark:text-text-main-dark font-body-md text-body-md transition-colors hover:bg-surface-container dark:hover:bg-surface-container-high">
-                    <span class="material-symbols-outlined text-[20px] text-on-surface-variant dark:text-outline">house</span>
-                    <span>Rent</span>
-                </button>
-                
-                <button type="button" data-category="entertainment" class="category-chip h-touch-target-min px-4 rounded-full flex items-center gap-2 bg-surface-container-low dark:bg-surface-container-high/40 border border-outline-variant/30 text-on-surface dark:text-text-main-dark font-body-md text-body-md transition-colors hover:bg-surface-container dark:hover:bg-surface-container-high">
-                    <span class="material-symbols-outlined text-[20px] text-on-surface-variant dark:text-outline">movie</span>
-                    <span>Entertainment</span>
-                </button>
-                
-                <button type="button" data-category="study" class="category-chip h-touch-target-min px-4 rounded-full flex items-center gap-2 bg-surface-container-low dark:bg-surface-container-high/40 border border-outline-variant/30 text-on-surface dark:text-text-main-dark font-body-md text-body-md transition-colors hover:bg-surface-container dark:hover:bg-surface-container-high">
-                    <span class="material-symbols-outlined text-[20px] text-on-surface-variant dark:text-outline">menu_book</span>
-                    <span>Study</span>
-                </button>
+                {% endfor %}
             </div>
         </div>
 
@@ -101,7 +84,7 @@
                     </div>
                     <div class="flex-1">
                         <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline block mb-0.5" for="dateInput">Date</label>
-                        <input type="date" id="dateInput" name="date" class="w-full bg-transparent border-none p-0 text-on-surface dark:text-text-main-dark focus:ring-0 outline-none font-medium h-7" required value=""/>
+                        <input type="date" id="dateInput" name="date" class="w-full bg-transparent border-none p-0 text-on-surface dark:text-text-main-dark focus:ring-0 outline-none font-medium h-7" required value="{{ tx.date }}"/>
                     </div>
                 </div>
             </div>
@@ -114,7 +97,7 @@
                 <div class="flex-1">
                     <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline block mb-0.5 cursor-pointer" for="noteInput">Note (Optional)</label>
                     <input class="w-full bg-transparent border-none p-0 font-body-md text-body-md text-on-surface dark:text-text-main-dark placeholder:text-outline-variant dark:placeholder:text-outline focus:ring-0 outline-none h-6" 
-                           id="noteInput" name="note" placeholder="What was this for?" type="text"/>
+                           id="noteInput" name="note" placeholder="What was this for?" type="text" value="{{ tx.note or '' }}"/>
                 </div>
             </div>
             
@@ -131,7 +114,7 @@
                 </div>
                 <!-- Custom Switch -->
                 <div class="relative w-12 h-7 bg-outline-variant/40 dark:bg-surface-container-high rounded-full overflow-hidden shadow-inner transition-colors group-hover:bg-outline-variant">
-                    <input class="sr-only peer" type="checkbox" name="recurring" id="recurringToggle" value="true"/>
+                    <input class="sr-only peer" type="checkbox" name="recurring" id="recurringToggle" value="true" {% if tx.recurring == 1 %}checked{% endif %}/>
                     <div class="absolute left-1 top-1 w-5 h-5 bg-surface-light dark:bg-text-main-dark rounded-full shadow-sm transition-transform peer-checked:translate-x-5 peer-checked:bg-primary-container"></div>
                 </div>
             </label>
@@ -142,7 +125,7 @@
         <div class="pt-4">
             <button type="submit" class="w-full h-[56px] bg-primary text-on-primary rounded-full font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(46,125,50,0.2)] hover:bg-surface-tint transition-all active:scale-95 duration-150">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                <span>Save Transaction</span>
+                <span>Save Changes</span>
             </button>
         </div>
         
@@ -153,34 +136,24 @@
 {% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Toggle Logic
         const toggleExpense = document.getElementById('toggleExpense');
         const toggleIncome = document.getElementById('toggleIncome');
         const transactionType = document.getElementById('transactionType');
         const amountInput = document.getElementById('amountInput');
         const currencySymbol = document.getElementById('currencySymbol');
-        
-        // Date Input fallback to today
-        const dateInput = document.getElementById('dateInput');
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.value = today;
 
         toggleExpense.addEventListener('click', () => {
             transactionType.value = 'expense';
-            // Styling
             toggleExpense.className = "flex-1 h-touch-target-min rounded-full flex items-center justify-center font-label-lg text-label-lg transition-all duration-300 bg-surface-light dark:bg-surface-dark shadow-sm text-secondary font-bold z-10 border border-outline-variant/10";
             toggleIncome.className = "flex-1 h-touch-target-min rounded-full flex items-center justify-center font-label-lg text-label-lg transition-all duration-300 text-on-surface-variant dark:text-outline hover:bg-surface-dim/40 z-10";
-            // Color mapping
             amountInput.className = "bg-transparent font-display-lg text-display-lg text-secondary dark:text-secondary-fixed w-full text-center border-none focus:ring-0 p-0 m-0 outline-none placeholder:text-surface-dim font-bold";
             currencySymbol.className = "font-display-lg text-display-lg text-secondary opacity-80 mr-2";
         });
 
         toggleIncome.addEventListener('click', () => {
             transactionType.value = 'income';
-            // Styling
             toggleIncome.className = "flex-1 h-touch-target-min rounded-full flex items-center justify-center font-label-lg text-label-lg transition-all duration-300 bg-surface-light dark:bg-surface-dark shadow-sm text-primary font-bold z-10 border border-outline-variant/10";
             toggleExpense.className = "flex-1 h-touch-target-min rounded-full flex items-center justify-center font-label-lg text-label-lg transition-all duration-300 text-on-surface-variant dark:text-outline hover:bg-surface-dim/40 z-10";
-            // Color mapping
             amountInput.className = "bg-transparent font-display-lg text-display-lg text-primary dark:text-primary-fixed w-full text-center border-none focus:ring-0 p-0 m-0 outline-none placeholder:text-surface-dim font-bold";
             currencySymbol.className = "font-display-lg text-display-lg text-primary opacity-80 mr-2";
         });
@@ -194,45 +167,14 @@
                 // Reset all chips styles
                 categoryChips.forEach(c => {
                     c.className = "category-chip h-touch-target-min px-4 rounded-full flex items-center gap-2 bg-surface-container-low dark:bg-surface-container-high/40 border border-outline-variant/30 text-on-surface dark:text-text-main-dark font-body-md text-body-md transition-colors hover:bg-surface-container dark:hover:bg-surface-container-high";
-                    const badge = c.querySelector('.ml-1');
-                    if (badge) badge.className = "ml-1 px-2 py-0.5 rounded-full bg-outline-variant text-white flex items-center gap-0.5";
                 });
 
                 // Set active chip styles
                 chip.className = "category-chip pulse-soft h-touch-target-min px-4 rounded-full flex items-center gap-2 bg-income-green-subtle dark:bg-primary/20 border-2 border-primary text-primary font-label-lg text-label-lg transition-all";
-                const badge = chip.querySelector('.ml-1');
-                if (badge) badge.className = "ml-1 px-2 py-0.5 rounded-full bg-primary text-white flex items-center gap-0.5";
 
                 // Update hidden input
                 selectedCategoryInput.value = chip.dataset.category;
             });
-        });
-
-        // AI Category Suggestion from Note Input
-        const noteInput = document.getElementById('noteInput');
-        const keywordMap = {
-            'food': ['food', 'eat', 'burger', 'lunch', 'dinner', 'breakfast', 'restaurant', 'canteen', 'grocery', 'groceries', 'cafe', 'coffee', 'tea', 'pizza', 'swiggy', 'zomato', 'vegetables', 'fruit', 'coke', 'snack', 'snacks', 'momo', 'roll', 'kathi', 'biryani'],
-            'transport': ['bus', 'cab', 'auto', 'taxi', 'uber', 'ola', 'train', 'metro', 'petrol', 'fuel', 'bike', 'car', 'fare', 'travel', 'rickshaw', 'ticket', 'flight', 'diesel', 'toll'],
-            'rent': ['rent', 'landlord', 'room', 'flat', 'hostel', 'pg', 'deposit', 'lease', 'tenant'],
-            'entertainment': ['movie', 'cinema', 'netflix', 'spotify', 'game', 'party', 'concert', 'show', 'theatre', 'fun', 'outing', 'pub', 'club', 'beer', 'weekend', 'arcade'],
-            'study': ['book', 'pen', 'pencil', 'notebook', 'course', 'exam', 'tuition', 'fees', 'stationery', 'library', 'college', 'school', 'class', 'photocopy', 'xerox']
-        };
-
-        noteInput.addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
-            if (!val) return;
-            
-            for (const [category, keywords] of Object.entries(keywordMap)) {
-                for (const keyword of keywords) {
-                    if (val.includes(keyword)) {
-                        const chip = document.querySelector(`.category-chip[data-category="${category}"]`);
-                        if (chip && selectedCategoryInput.value !== category) {
-                            chip.click();
-                            break;
-                        }
-                    }
-                }
-            }
         });
     });
 </script>

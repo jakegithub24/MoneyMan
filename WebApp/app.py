@@ -276,6 +276,271 @@ def transaction_add():
         
     return redirect(url_for('dashboard'))
 
+@app.route('/transactions')
+def transactions():
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    profile = get_user_profile()
+    selected_type = request.args.get('type', 'all')
+    selected_category = request.args.get('category', 'all')
+    
+    conn = get_db_connection()
+    
+    query = "SELECT * FROM transactions WHERE 1=1"
+    params = []
+    
+    if selected_type != 'all':
+        query += " AND type=?"
+        params.append(selected_type)
+        
+    if selected_category != 'all':
+        query += " AND category=?"
+        params.append(selected_category)
+        
+    query += " ORDER BY date DESC, id DESC"
+    
+    rows = conn.execute(query, params).fetchall()
+    
+    tx_list = []
+    for row in rows:
+        tx_list.append({
+            'id': row['id'],
+            'type': row['type'],
+            'amount': row['amount'],
+            'amount_formatted': format_currency(row['amount']),
+            'category': row['category'],
+            'date': row['date'],
+            'note': row['note'],
+            'recurring': row['recurring'],
+            'icon': get_category_icon(row['category'])
+        })
+        
+    conn.close()
+    
+    return render_template(
+        'transactions.html',
+        username=profile['username'],
+        user_role=profile['user_role'],
+        transactions=tx_list,
+        selected_type=selected_type,
+        selected_category=selected_category
+    )
+
+@app.route('/transaction/delete/<int:tx_id>', methods=['POST'])
+def transaction_delete(tx_id):
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    conn = get_db_connection()
+    conn.execute("DELETE FROM transactions WHERE id=?", (tx_id,))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('transactions'))
+
+@app.route('/transaction/edit/<int:tx_id>', methods=['GET', 'POST'])
+def transaction_edit(tx_id):
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    profile = get_user_profile()
+    conn = get_db_connection()
+    
+    if request.method == 'POST':
+        tx_type = request.form.get('type', 'expense')
+        amount = float(request.form.get('amount', 0.0))
+        category = request.form.get('category', 'other')
+        date = request.form.get('date')
+        note = request.form.get('note', '')
+        recurring = 1 if request.form.get('recurring') == 'true' else 0
+        
+        if amount > 0:
+            conn.execute("""
+                UPDATE transactions 
+                SET type=?, amount=?, category=?, date=?, note=?, recurring=? 
+                WHERE id=?
+            """, (tx_type, amount, category, date, note, recurring, tx_id))
+            conn.commit()
+            
+        conn.close()
+        return redirect(url_for('transactions'))
+        
+    row = conn.execute("SELECT * FROM transactions WHERE id=?", (tx_id,)).fetchone()
+    conn.close()
+    
+    if not row:
+        return redirect(url_for('transactions'))
+        
+    tx = {
+        'id': row['id'],
+        'type': row['type'],
+        'amount': row['amount'],
+        'category': row['category'],
+        'date': row['date'],
+        'note': row['note'],
+        'recurring': row['recurring']
+    }
+    
+    return render_template(
+        'edit_transaction.html',
+        username=profile['username'],
+        user_role=profile['user_role'],
+        tx=tx
+    )
+
+@app.route('/ai-analysis')
+def ai_analysis():
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    profile = get_user_profile()
+    conn = get_db_connection()
+    
+    tx_rows = conn.execute("SELECT * FROM transactions ORDER BY date DESC").fetchall()
+    
+    income_val = 0.0
+    expense_val = 0.0
+    category_totals = {}
+    
+    for row in tx_rows:
+        amount = row['amount']
+        if row['type'] == 'income':
+            income_val += amount
+        else:
+            expense_val += amount
+            cat = row['category']
+            category_totals[cat] = category_totals.get(cat, 0.0) + amount
+            
+    conn.close()
+    
+    savings_val = max(0.0, income_val - expense_val)
+    savings_rate = int((savings_val / income_val * 100)) if income_val > 0 else 0
+    
+    api_key = os.environ.get('GEMINI_API_KEY')
+    is_real_ai = False
+    
+    top_categories = sorted(category_totals.items(), key=lambda x: x[1], reverse=True)
+    top_cat_str = ""
+    if top_categories:
+        top_cat_str = f"Your highest expense category is **{top_categories[0][0].title()}** (₹{format_currency(top_categories[0][1])})."
+    else:
+        top_cat_str = "You haven't recorded any expenses yet."
+        
+    persona = profile['persona']
+    
+    if persona == 'student':
+        persona_tip = "As a Student, tracking allowances is key. Allocate 10% of your allowance to savings first before spending, and watch out for minor social outing expenses."
+        persona_icon = "school"
+        persona_title = "Student Allowance Tip"
+    elif persona == 'gig_worker':
+        persona_tip = "As a Gig Worker, your income is variable. Aim to build an emergency fund of at least 3 months of fixed costs to smooth out low-income periods."
+        persona_icon = "two_wheeler"
+        persona_title = "Variable Income Tip"
+    else:
+        persona_tip = "As a Retired / Elderly user, securing fixed monthly savings and tracking medical costs is crucial. Focus on keeping grocery and pharmacy expenses predictable."
+        persona_icon = "health_and_safety"
+        persona_title = "Retired Wealth Preservation"
+        
+    ai_report = {
+        'summary': f"For the current monthly cycle, you earned **₹{format_currency(income_val)}** and spent **₹{format_currency(expense_val)}**. This leaves you with **₹{format_currency(savings_val)}** in net savings, achieving a **{savings_rate}% savings rate**. {top_cat_str}",
+        'observations': [
+            f"You spent a total of ₹{format_currency(expense_val)} across your expense categories. Checking your budgets page is recommended to ensure you are within bounds.",
+            f"Your active savings rate is {savings_rate}%. A healthy financial goal is to maintain a savings rate of at least 20% to achieve your financial milestones faster.",
+            "You have active EMI commitments. Ensuring these are budgeted for first guarantees you avoid late fee penalties."
+        ],
+        'recommendations': [
+            {
+                'title': persona_title,
+                'text': persona_tip,
+                'icon': persona_icon
+            },
+            {
+                'title': "Cut Non-Essentials",
+                'text': "Consider reducing shopping and entertainment spend by 10% next month. This simple micro-saving will free up extra funds for your active savings goals.",
+                'icon': "trending_down"
+            }
+        ]
+    }
+    
+    if api_key:
+        try:
+            import json
+            import urllib.request
+            
+            tx_data_for_api = []
+            for row in tx_rows:
+                tx_data_for_api.append({
+                    'type': row['type'],
+                    'amount': row['amount'],
+                    'category': row['category'],
+                    'date': row['date'],
+                    'note': row['note']
+                })
+                
+            prompt = f"""
+            You are MoneyMan AI, a friendly financial assistant. Analyze this user's transactions:
+            User Name: {profile['username']}
+            Profile Persona: {persona} (role: {profile['user_role']})
+            Monthly Income: {income_val}
+            Monthly Expenses: {expense_val}
+            Savings: {savings_val} (Savings Rate: {savings_rate}%)
+            Transactions list: {json.dumps(tx_data_for_api)}
+            
+            Provide a financial analysis in JSON format matching this EXACT structure:
+            {{
+                "summary": "a short paragraphs summarizing their spending health and patterns",
+                "observations": [
+                    "observation bullet point 1",
+                    "observation bullet point 2",
+                    "observation bullet point 3"
+                ],
+                "recommendations": [
+                    {{
+                        "title": "recommendation title 1",
+                        "text": "details of recommendation 1",
+                        "icon": "material symbol icon name (e.g. trending_down, savings, restaurant, school)"
+                    }},
+                    {{
+                        "title": "recommendation title 2",
+                        "text": "details of recommendation 2",
+                        "icon": "material symbol icon name"
+                    }}
+                ]
+            }}
+            Return ONLY the raw JSON document, no markdown formatting.
+            """
+            
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+            headers = {'Content-Type': 'application/json'}
+            data = {
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"responseMimeType": "application/json"}
+            }
+            req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers, method='POST')
+            with urllib.request.urlopen(req, timeout=10) as response:
+                res_body = response.read().decode('utf-8')
+                res_json = json.loads(res_body)
+                content_text = res_json['candidates'][0]['content']['parts'][0]['text']
+                parsed_report = json.loads(content_text)
+                
+                if 'summary' in parsed_report and 'observations' in parsed_report and 'recommendations' in parsed_report:
+                    ai_report = parsed_report
+                    is_real_ai = True
+        except Exception as e:
+            ai_report['observations'].append(f"AI API request failed: {str(e)}. Using local offline insights.")
+
+    return render_template(
+        'ai_analysis.html',
+        username=profile['username'],
+        user_role=profile['user_role'],
+        income_formatted=format_currency(income_val),
+        expense_formatted=format_currency(expense_val),
+        savings_rate=savings_rate,
+        is_real_ai=is_real_ai,
+        ai_report=ai_report
+    )
+
 @app.route('/budgets')
 def budgets():
     if not is_user_onboarded():

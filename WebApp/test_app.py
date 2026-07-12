@@ -24,6 +24,15 @@ class MoneyManTestCase(unittest.TestCase):
         self.client = app.test_client()
         
         # Reset the database for each test
+        conn = get_db_connection()
+        conn.execute("DROP TABLE IF EXISTS users")
+        conn.execute("DROP TABLE IF EXISTS transactions")
+        conn.execute("DROP TABLE IF EXISTS budgets")
+        conn.execute("DROP TABLE IF EXISTS emis")
+        conn.execute("DROP TABLE IF EXISTS goals")
+        conn.commit()
+        conn.close()
+        
         init_db()
 
     def tearDown(self):
@@ -194,6 +203,87 @@ class MoneyManTestCase(unittest.TestCase):
         self.assertEqual(emi['total_months'], 6)
         self.assertEqual(emi['remaining_months'], 6)
         conn.close()
+
+    def test_list_transactions(self):
+        """Test listing transactions with type/category filters."""
+        conn = get_db_connection()
+        conn.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('income', 1000.0, 'other', '2026-07-01', 'Gift')")
+        conn.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('expense', 200.0, 'food', '2026-07-02', 'Snack')")
+        conn.commit()
+        conn.close()
+        
+        response = self.client.get('/transactions')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Gift', response.data)
+        self.assertIn(b'Snack', response.data)
+        
+        response = self.client.get('/transactions?type=income')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Gift', response.data)
+        self.assertNotIn(b'Snack', response.data)
+
+    def test_edit_transaction(self):
+        """Test editing an existing transaction."""
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('expense', 500.0, 'other', '2026-07-01', 'Old Note')")
+        tx_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        
+        response = self.client.get(f'/transaction/edit/{tx_id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Old Note', response.data)
+        
+        response = self.client.post(f'/transaction/edit/{tx_id}', data={
+            'type': 'expense',
+            'amount': '600.00',
+            'category': 'shopping',
+            'date': '2026-07-02',
+            'note': 'Updated Note',
+            'recurring': 'true'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        
+        conn = get_db_connection()
+        tx = conn.execute("SELECT * FROM transactions WHERE id=?", (tx_id,)).fetchone()
+        self.assertEqual(tx['amount'], 600.00)
+        self.assertEqual(tx['category'], 'shopping')
+        self.assertEqual(tx['note'], 'Updated Note')
+        self.assertEqual(tx['recurring'], 1)
+        conn.close()
+
+    def test_delete_transaction(self):
+        """Test deleting a transaction."""
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('expense', 100.0, 'other', '2026-07-01', 'To Delete')")
+        tx_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        
+        response = self.client.post(f'/transaction/delete/{tx_id}', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        
+        conn = get_db_connection()
+        tx = conn.execute("SELECT * FROM transactions WHERE id=?", (tx_id,)).fetchone()
+        self.assertIsNone(tx)
+        conn.close()
+
+    def test_ai_analysis_view(self):
+        """Test AI analysis page rendering and fallback report generation."""
+        conn = get_db_connection()
+        conn.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('income', 10000.0, 'other', '2026-07-01', 'Salary')")
+        conn.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('expense', 4000.0, 'food', '2026-07-02', 'Groceries')")
+        conn.commit()
+        conn.close()
+        
+        response = self.client.get('/ai-analysis')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Savings Rate', response.data)
+        self.assertIn(b'51%', response.data)
+        self.assertIn(b'Food', response.data)
 
 if __name__ == '__main__':
     unittest.main()

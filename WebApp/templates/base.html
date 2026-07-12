@@ -222,10 +222,10 @@
                     <span>Dashboard</span>
                 </a>
                 
-                <a href="{{ url_for('add_transaction') if url_for else '/add-transaction' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'add_transaction' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'add_transaction' %}1{% else %}0{% endif %};">add_circle</span>
-                    <span>Add Transaction</span>
+                <a href="{{ url_for('transactions') if url_for else '/transactions' }}" 
+                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'transactions' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'transactions' %}1{% else %}0{% endif %};">receipt_long</span>
+                    <span>Transactions</span>
                 </a>
                 
                 <a href="{{ url_for('budgets') if url_for else '/budgets' }}" 
@@ -244,6 +244,12 @@
                    class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'goals' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'goals' %}1{% else %}0{% endif %};">flag</span>
                     <span>Savings Goals</span>
+                </a>
+                
+                <a href="{{ url_for('ai_analysis') if url_for else '/ai-analysis' }}" 
+                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'ai_analysis' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'ai_analysis' %}1{% else %}0{% endif %};">auto_awesome</span>
+                    <span>AI Insights</span>
                 </a>
                 
                 <a href="{{ url_for('learn') if url_for else '/learn' }}" 
@@ -316,10 +322,10 @@
                         <span class="text-[10px] mt-0.5">Home</span>
                     </a>
                     
-                    <a href="{{ url_for('add_transaction') if url_for else '/add-transaction' }}" 
-                       class="flex flex-col items-center justify-center flex-1 py-1 rounded-xl transition-all duration-200 {% if active_page == 'add_transaction' %} text-primary-container font-bold {% else %} text-on-surface-variant dark:text-outline {% endif %}">
-                        <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' {% if active_page == 'add_transaction' %}1{% else %}0{% endif %};">add_circle</span>
-                        <span class="text-[10px] mt-0.5">Add</span>
+                    <a href="{{ url_for('transactions') if url_for else '/transactions' }}" 
+                       class="flex flex-col items-center justify-center flex-1 py-1 rounded-xl transition-all duration-200 {% if active_page == 'transactions' %} text-primary-container font-bold {% else %} text-on-surface-variant dark:text-outline {% endif %}">
+                        <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' {% if active_page == 'transactions' %}1{% else %}0{% endif %};">receipt_long</span>
+                        <span class="text-[10px] mt-0.5">Trans</span>
                     </a>
                     
                     <a href="{{ url_for('budgets') if url_for else '/budgets' }}" 
@@ -340,10 +346,10 @@
                         <span class="text-[10px] mt-0.5">Goals</span>
                     </a>
                     
-                    <a href="{{ url_for('learn') if url_for else '/learn' }}" 
-                       class="flex flex-col items-center justify-center flex-1 py-1 rounded-xl transition-all duration-200 {% if active_page == 'learn' %} text-primary-container font-bold {% else %} text-on-surface-variant dark:text-outline {% endif %}">
-                        <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' {% if active_page == 'learn' %}1{% else %}0{% endif %};">school</span>
-                        <span class="text-[10px] mt-0.5">Learn</span>
+                    <a href="{{ url_for('ai_analysis') if url_for else '/ai-analysis' }}" 
+                       class="flex flex-col items-center justify-center flex-1 py-1 rounded-xl transition-all duration-200 {% if active_page == 'ai_analysis' %} text-primary-container font-bold {% else %} text-on-surface-variant dark:text-outline {% endif %}">
+                        <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' {% if active_page == 'ai_analysis' %}1{% else %}0{% endif %};">auto_awesome</span>
+                        <span class="text-[10px] mt-0.5">AI</span>
                     </a>
                 </div>
             </nav>
