@@ -72,7 +72,10 @@
                 </thead>
                 <tbody class="divide-y divide-outline-variant/10">
                     {% for tx in transactions %}
-                    <tr class="hover:bg-surface-container-lowest/50 dark:hover:bg-surface-container/10 transition-colors text-sm">
+                    <tr class="transaction-row hover:bg-surface-container-lowest/50 dark:hover:bg-surface-container/10 transition-transform duration-200 text-sm select-none"
+                        data-id="{{ tx.id }}"
+                        ondblclick="location.href='/transaction/edit/{{ tx.id }}'"
+                        title="Double-click to edit, swipe left to delete">
                         <!-- Type Badge -->
                         <td class="p-4 font-semibold">
                             {% if tx.type == 'income' %}
@@ -143,4 +146,74 @@
         {% endif %}
     </section>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const rows = document.querySelectorAll('.transaction-row');
+        rows.forEach(row => {
+            let startX = 0;
+            let currentX = 0;
+            let isSwiping = false;
+            const txId = row.dataset.id;
+            
+            row.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isSwiping = true;
+                row.style.transition = '';
+            }, {passive: true});
+
+            row.addEventListener('touchmove', (e) => {
+                if (!isSwiping) return;
+                currentX = e.touches[0].clientX;
+                const diffX = currentX - startX;
+                
+                // Only allow left swipe
+                if (diffX < 0) {
+                    const translateX = Math.max(-100, diffX);
+                    row.style.transform = `translateX(${translateX}px)`;
+                    
+                    if (diffX < -70) {
+                        row.style.backgroundColor = 'rgba(186, 26, 26, 0.15)';
+                    } else {
+                        row.style.backgroundColor = '';
+                    }
+                }
+            }, {passive: true});
+
+            row.addEventListener('touchend', (e) => {
+                if (!isSwiping) return;
+                isSwiping = false;
+                const diffX = currentX - startX;
+                
+                row.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease';
+                
+                if (diffX < -80) {
+                    if (confirm('Delete this transaction?')) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/transaction/delete/${txId}`;
+                        document.body.appendChild(form);
+                        form.submit();
+                    } else {
+                        row.style.transform = '';
+                        row.style.backgroundColor = '';
+                    }
+                } else {
+                    row.style.transform = '';
+                    row.style.backgroundColor = '';
+                }
+            });
+
+            // Prevent double-click propagation on action cells
+            const actionsCell = row.querySelector('td:last-child');
+            if (actionsCell) {
+                actionsCell.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}

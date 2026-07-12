@@ -285,5 +285,50 @@ class MoneyManTestCase(unittest.TestCase):
         self.assertIn(b'51%', response.data)
         self.assertIn(b'Food', response.data)
 
+    def test_budget_overspend_classification(self):
+        """Test that budget styling logic correctly flags overspend limits."""
+        from app import get_budget_status_styles
+        
+        # Test danger/overspend (>= 100%)
+        styles_100 = get_budget_status_styles(100)
+        self.assertEqual(styles_100['status'], 'danger')
+        self.assertIn('text-error', styles_100['icon_bg'])
+        
+        # Test warning (>= 80% and < 100%)
+        styles_80 = get_budget_status_styles(85)
+        self.assertEqual(styles_80['status'], 'warning')
+        
+        # Test normal (< 80%)
+        styles_50 = get_budget_status_styles(50)
+        self.assertEqual(styles_50['status'], 'good')
+
+    def test_goal_styling_classification(self):
+        """Test that goal progress styling logic categorizes goals correctly."""
+        from app import get_goal_styles
+        
+        # Test on track (>= 50%)
+        styles_on_track = get_goal_styles(60)
+        self.assertEqual(styles_on_track['status'], 'On Track')
+        
+        # Test needs attention (< 50%)
+        styles_needs_attention = get_goal_styles(40)
+        self.assertEqual(styles_needs_attention['status'], 'Needs Attention')
+
+    def test_emi_math_calculation(self):
+        """Test the standard monthly EMI amortisation mathematical formula."""
+        p = 10000.0
+        annual_rate = 12.0
+        r = annual_rate / 12 / 100
+        n = 12
+        
+        emi = p * r * ((1 + r)**n) / (((1 + r)**n) - 1)
+        self.assertAlmostEqual(emi, 888.49, places=2)
+        
+        p2 = 500000.0
+        r2 = 8.5 / 12 / 100
+        n2 = 180
+        emi2 = p2 * r2 * ((1 + r2)**n2) / (((1 + r2)**n2) - 1)
+        self.assertAlmostEqual(emi2, 4923.70, places=2)
+
 if __name__ == '__main__':
     unittest.main()

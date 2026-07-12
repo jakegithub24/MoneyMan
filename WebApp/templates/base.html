@@ -122,12 +122,59 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f9f9f9;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, font-size 0.3s ease;
         }
         
         .dark body {
             background-color: #121212;
             color: #f0f1f1;
+        }
+
+        /* High Contrast & Large Text Accessible Mode styles */
+        html.accessibility-mode {
+            font-size: 120% !important;
+        }
+        
+        .accessibility-mode body {
+            font-weight: 550 !important;
+        }
+
+        .accessibility-mode .text-on-surface-variant {
+            color: #000000 !important;
+        }
+        .dark.accessibility-mode .text-on-surface-variant {
+            color: #ffffff !important;
+        }
+
+        .accessibility-mode .text-outline {
+            color: #000000 !important;
+        }
+        .dark.accessibility-mode .text-outline {
+            color: #ffffff !important;
+        }
+
+        .accessibility-mode border, 
+        .accessibility-mode .border,
+        .accessibility-mode table,
+        .accessibility-mode tr,
+        .accessibility-mode td,
+        .accessibility-mode th {
+            border-width: 2px !important;
+            border-color: #000000 !important;
+        }
+        .dark.accessibility-mode border, 
+        .dark.accessibility-mode .border,
+        .dark.accessibility-mode table,
+        .dark.accessibility-mode tr,
+        .dark.accessibility-mode td,
+        .dark.accessibility-mode th {
+            border-color: #ffffff !important;
+        }
+
+        .accessibility-mode button, 
+        .accessibility-mode .btn,
+        .accessibility-mode a {
+            min-height: 48px !important;
         }
 
         /* Hide scrollbars but keep functionality */
@@ -209,9 +256,15 @@
         <!-- Sidebar Navigation (Desktop only: md and up) -->
         <aside class="hidden md:flex md:w-64 lg:w-72 flex-col bg-surface-container-lowest dark:bg-surface-dark border-r border-outline-variant/30 z-30 shrink-0">
             <!-- Sidebar Header -->
-            <div class="flex items-center h-16 px-6 gap-3 border-b border-outline-variant/20">
-                <span class="material-symbols-outlined text-primary dark:text-primary-fixed text-3xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
-                <span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">MoneyMan</span>
+            <div class="flex items-center h-16 px-6 gap-3 border-b border-outline-variant/20 justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary dark:text-primary-fixed text-3xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                    <span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">MoneyMan</span>
+                </div>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-fixed text-[10px] font-bold shrink-0" title="All data is stored securely offline on your device.">
+                    <span class="material-symbols-outlined text-[10px] font-bold">cloud_off</span>
+                    Local
+                </span>
             </div>
             
             <!-- Sidebar Navigation Links -->
@@ -268,11 +321,18 @@
             <!-- Sidebar Footer -->
             <div class="p-4 border-t border-outline-variant/20 space-y-4">
                 <!-- Theme Switcher -->
-                <button onclick="toggleTheme()" class="flex items-center w-full px-4 py-2.5 rounded-xl gap-4 text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container transition-colors font-label-lg text-label-lg">
+                <button onclick="toggleTheme()" class="flex items-center w-full px-4 py-2.5 rounded-xl gap-4 text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container transition-colors font-label-lg text-label-lg" title="Toggle Light/Dark Theme">
                     <span class="material-symbols-outlined dark:hidden">dark_mode</span>
                     <span class="material-symbols-outlined hidden dark:block text-yellow-500">light_mode</span>
                     <span class="dark:hidden">Dark Mode</span>
                     <span class="hidden dark:block">Light Mode</span>
+                </button>
+
+                <!-- Accessibility Switcher -->
+                <button onclick="toggleAccessibility()" class="flex items-center w-full px-4 py-2.5 rounded-xl gap-4 text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container transition-colors font-label-lg text-label-lg" title="Toggle Large Text / High Contrast Accessible Mode">
+                    <span class="material-symbols-outlined text-primary dark:text-primary-fixed">text_fields</span>
+                    <span class="accessible-text-normal">Accessible Mode</span>
+                    <span class="accessible-text-active hidden font-bold text-primary dark:text-primary-fixed">Accessibility ON</span>
                 </button>
                 
                 <!-- Profile widget -->
@@ -296,8 +356,15 @@
                 <div class="flex items-center gap-2 text-primary dark:text-primary-fixed">
                     <span class="material-symbols-outlined font-headline-md text-headline-md font-bold">account_balance_wallet</span>
                     <span class="font-headline-md text-headline-md font-bold">MoneyMan</span>
+                    <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-fixed text-[9px] font-bold ml-1 shrink-0">
+                        <span class="material-symbols-outlined text-[10px] font-bold">cloud_off</span>
+                        Local
+                    </span>
                 </div>
                 <div class="flex items-center gap-3">
+                    <button onclick="toggleAccessibility()" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container transition-colors" title="Toggle Accessible Mode">
+                        <span class="material-symbols-outlined">text_fields</span>
+                    </button>
                     <button onclick="toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container transition-colors">
                         <span class="material-symbols-outlined dark:hidden">dark_mode</span>
                         <span class="material-symbols-outlined hidden dark:block text-yellow-500">light_mode</span>
@@ -384,6 +451,36 @@
         
         // Initialize theme before layout is fully rendered to prevent flash
         initTheme();
+
+        function initAccessibility() {
+            const savedAcc = localStorage.getItem('accessibility') || 'false';
+            const normText = document.querySelectorAll('.accessible-text-normal');
+            const actText = document.querySelectorAll('.accessible-text-active');
+            
+            if (savedAcc === 'true') {
+                document.documentElement.classList.add('accessibility-mode');
+                normText.forEach(el => el.classList.add('hidden'));
+                actText.forEach(el => el.classList.remove('hidden'));
+            } else {
+                document.documentElement.classList.remove('accessibility-mode');
+                normText.forEach(el => el.classList.remove('hidden'));
+                actText.forEach(el => el.classList.add('hidden'));
+            }
+        }
+        
+        function toggleAccessibility() {
+            if (document.documentElement.classList.contains('accessibility-mode')) {
+                document.documentElement.classList.remove('accessibility-mode');
+                localStorage.setItem('accessibility', 'false');
+            } else {
+                document.documentElement.classList.add('accessibility-mode');
+                localStorage.setItem('accessibility', 'true');
+            }
+            initAccessibility();
+        }
+        
+        // Initialize accessibility on load
+        initAccessibility();
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>

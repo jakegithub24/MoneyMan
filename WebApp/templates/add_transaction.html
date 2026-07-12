@@ -113,8 +113,13 @@
                 </div>
                 <div class="flex-1">
                     <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline block mb-0.5 cursor-pointer" for="noteInput">Note (Optional)</label>
-                    <input class="w-full bg-transparent border-none p-0 font-body-md text-body-md text-on-surface dark:text-text-main-dark placeholder:text-outline-variant dark:placeholder:text-outline focus:ring-0 outline-none h-6" 
-                           id="noteInput" name="note" placeholder="What was this for?" type="text"/>
+                    <div class="flex items-center gap-2">
+                        <input class="w-full bg-transparent border-none p-0 font-body-md text-body-md text-on-surface dark:text-text-main-dark placeholder:text-outline-variant dark:placeholder:text-outline focus:ring-0 outline-none h-6" 
+                               id="noteInput" name="note" placeholder="What was this for?" type="text"/>
+                        <button type="button" id="voiceBtn" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-high transition-all" title="Record Voice Note" aria-label="Record voice note">
+                            <span class="material-symbols-outlined text-[20px]" id="micIcon">mic</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -234,6 +239,56 @@
                 }
             }
         });
+
+        // Speech Recognition API Integration
+        const voiceBtn = document.getElementById('voiceBtn');
+        const micIcon = document.getElementById('micIcon');
+        
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = () => {
+                micIcon.textContent = 'settings_voice';
+                micIcon.classList.add('text-error', 'pulse-soft');
+                voiceBtn.classList.add('bg-error-container/20');
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                noteInput.value = transcript;
+                noteInput.dispatchEvent(new Event('input'));
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error', event);
+                resetVoiceUI();
+            };
+            
+            recognition.onend = () => {
+                resetVoiceUI();
+            };
+            
+            function resetVoiceUI() {
+                micIcon.textContent = 'mic';
+                micIcon.classList.remove('text-error', 'pulse-soft');
+                voiceBtn.classList.remove('bg-error-container/20');
+            }
+            
+            voiceBtn.addEventListener('click', () => {
+                if (micIcon.textContent === 'settings_voice') {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+        } else {
+            voiceBtn.classList.add('hidden');
+        }
     });
 </script>
 {% endblock %}
