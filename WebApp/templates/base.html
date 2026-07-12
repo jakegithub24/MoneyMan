@@ -423,13 +423,37 @@
                 </button>
                 
                 <!-- Profile widget -->
-                <div class="flex items-center gap-3 px-4 py-2">
-                    <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant/40">
-                        <img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQ1RJu1CKhnSLD_OSMeyE6557bcNx1VzHDWTvhroSgHVtUtSXfD0WpRHym4aWo_xYHmU3eQBEyRCSD9Cr9Ry-uPfl4V_SaC-fFWaZYvbKPXA9niiK-CTb88CU4mvMuY5PFMFQr0q6jv1CPxQGeOEniqMPdwDGnZ-aN-58jPKEA2glUJ6vWiI-xilZvh78psEY-1139_6FHhWK0IOnb9taoSb6uLKUyR6VtcaEfJeu8xbRSa2WGWyFeAg"/>
+                <div class="relative flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-surface-container rounded-xl transition-colors" id="profileDropdownBtn">
+                    <div class="w-10 h-10 rounded-full overflow-hidden bg-primary/10 dark:bg-primary/20 border border-outline-variant/40 shrink-0 flex items-center justify-center text-primary dark:text-primary-fixed">
+                        {% if profile_pic %}
+                            <img alt="User profile avatar" class="w-full h-full object-cover" src="{{ profile_pic }}"/>
+                        {% else %}
+                            <span class="material-symbols-outlined text-[24px]">person</span>
+                        {% endif %}
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <h4 class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark truncate">{{ username | default("Happy User") }}</h4>
                         <span class="text-xs text-on-surface-variant dark:text-on-surface-variant truncate block">{{ user_role | default("Student Profile") }}</span>
+                    </div>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdownMenu" class="hidden absolute bottom-full left-4 mb-2 w-56 bg-surface-light dark:bg-surface-dark border border-outline-variant/20 rounded-2xl shadow-xl z-50 overflow-hidden py-1">
+                        <a href="{{ url_for('dashboard') if url_for else '/dashboard' }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold">
+                            <span class="material-symbols-outlined text-[20px] text-primary">person</span>
+                            <span>Profile</span>
+                        </a>
+                        <a href="{{ url_for('settings') if url_for else '/settings' }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold">
+                            <span class="material-symbols-outlined text-[20px] text-primary">settings</span>
+                            <span>Settings</span>
+                        </a>
+                        <button onclick="toggleAccessibility(); event.stopPropagation();" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold text-left">
+                            <span class="material-symbols-outlined text-[20px] text-primary">text_fields</span>
+                            <span>Accessibility</span>
+                        </button>
+                        <button onclick="toggleTheme(); event.stopPropagation();" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold text-left">
+                            <span class="material-symbols-outlined text-[20px] text-primary">palette</span>
+                            <span>Theme Toggle</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -441,7 +465,7 @@
             <!-- Mobile Top App Bar (Hidden on Desktop) -->
             <header class="flex md:hidden justify-between items-center h-16 px-container-margin w-full bg-surface-container-lowest dark:bg-surface-dark border-b border-outline-variant/20 shrink-0 sticky top-0 z-40">
                 <div class="flex items-center gap-2 text-primary dark:text-primary-fixed">
-                    <span class="material-symbols-outlined font-headline-md text-headline-md font-bold">account_balance_wallet</span>
+                    <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
                     <span class="font-headline-md text-headline-md font-bold">MoneyMan</span>
                     <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-fixed text-[9px] font-bold ml-1 shrink-0">
                         <span class="material-symbols-outlined text-[10px] font-bold">cloud_off</span>
@@ -449,15 +473,32 @@
                     </span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="toggleAccessibility()" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container transition-colors" title="Toggle Accessible Mode">
-                        <span class="material-symbols-outlined">text_fields</span>
-                    </button>
-                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container transition-colors">
-                        <span class="material-symbols-outlined dark:hidden">dark_mode</span>
-                        <span class="material-symbols-outlined hidden dark:block text-yellow-500">light_mode</span>
-                    </button>
-                    <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-variant flex items-center justify-center border border-outline-variant/30">
-                        <img class="w-full h-full object-cover" alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQ1RJu1CKhnSLD_OSMeyE6557bcNx1VzHDWTvhroSgHVtUtSXfD0WpRHym4aWo_xYHmU3eQBEyRCSD9Cr9Ry-uPfl4V_SaC-fFWaZYvbKPXA9niiK-CTb88CU4mvMuY5PFMFQr0q6jv1CPxQGeOEniqMPdwDGnZ-aN-58jPKEA2glUJ6vWiI-xilZvh78psEY-1139_6FHhWK0IOnb9taoSb6uLKUyR6VtcaEfJeu8xbRSa2WGWyFeAg"/>
+                    <div class="relative w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center border border-outline-variant/30 cursor-pointer text-primary dark:text-primary-fixed" id="mobileProfileBtn">
+                        {% if profile_pic %}
+                            <img class="w-full h-full object-cover rounded-full" alt="User profile avatar" src="{{ profile_pic }}"/>
+                        {% else %}
+                            <span class="material-symbols-outlined text-[24px]">person</span>
+                        {% endif %}
+                        
+                        <!-- Mobile Dropdown Menu -->
+                        <div id="mobileProfileMenu" class="hidden absolute top-full right-0 mt-2 w-56 bg-surface-light dark:bg-surface-dark border border-outline-variant/20 rounded-2xl shadow-xl z-50 overflow-hidden py-1">
+                            <a href="{{ url_for('dashboard') if url_for else '/dashboard' }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold">
+                                <span class="material-symbols-outlined text-[20px] text-primary">person</span>
+                                <span>Profile</span>
+                            </a>
+                            <a href="{{ url_for('settings') if url_for else '/settings' }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold">
+                                <span class="material-symbols-outlined text-[20px] text-primary">settings</span>
+                                <span>Settings</span>
+                            </a>
+                            <button onclick="toggleAccessibility(); event.stopPropagation();" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold text-left">
+                                <span class="material-symbols-outlined text-[20px] text-primary">text_fields</span>
+                                <span>Accessibility</span>
+                            </button>
+                            <button onclick="toggleTheme(); event.stopPropagation();" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold text-left">
+                                <span class="material-symbols-outlined text-[20px] text-primary">palette</span>
+                                <span>Theme Toggle</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -568,6 +609,36 @@
         
         // Initialize accessibility on load
         initAccessibility();
+
+        // Profile Dropdown Menus toggler
+        document.addEventListener('DOMContentLoaded', () => {
+            const deskBtn = document.getElementById('profileDropdownBtn');
+            const deskMenu = document.getElementById('profileDropdownMenu');
+            const mobBtn = document.getElementById('mobileProfileBtn');
+            const mobMenu = document.getElementById('mobileProfileMenu');
+
+            if (deskBtn && deskMenu) {
+                deskBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deskMenu.classList.toggle('hidden');
+                    if (mobMenu) mobMenu.classList.add('hidden');
+                });
+            }
+
+            if (mobBtn && mobMenu) {
+                mobBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    mobMenu.classList.toggle('hidden');
+                    if (deskMenu) deskMenu.classList.add('hidden');
+                });
+            }
+
+            // Close menus on clicking anywhere else
+            document.addEventListener('click', () => {
+                if (deskMenu) deskMenu.classList.add('hidden');
+                if (mobMenu) mobMenu.classList.add('hidden');
+            });
+        });
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>

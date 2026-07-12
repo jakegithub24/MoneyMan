@@ -66,7 +66,8 @@ class MoneyManTestCase(unittest.TestCase):
         
         # Verify seed user (Ramesh Kumar, retired)
         user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
-        self.assertEqual(user['username'], 'Ramesh Kumar')
+        self.assertEqual(user['name'], 'Ramesh Kumar')
+        self.assertEqual(user['username'], 'ramesh123')
         self.assertEqual(user['persona'], 'retired')
         self.assertTrue(verify_pin('1234', user['pin']))
         self.assertEqual(user['is_onboarded'], 1)
@@ -100,18 +101,21 @@ class MoneyManTestCase(unittest.TestCase):
         
         # Submit onboarding
         response = self.client.post('/onboarding', data={
+            'name': 'Aarav Mehta',
+            'username': 'aarav123',
             'persona': 'student',
             'pin': '9876'
         }, follow_redirects=True)
         
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Aarav Mehta', response.data) # Default student name
+        self.assertIn(b'Aarav Mehta', response.data)
         
         # Verify db entry
         conn = get_db_connection()
         user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
         self.assertIsNotNone(user)
-        self.assertEqual(user['username'], 'Aarav Mehta')
+        self.assertEqual(user['name'], 'Aarav Mehta')
+        self.assertEqual(user['username'], 'aarav123')
         self.assertEqual(user['persona'], 'student')
         self.assertTrue(verify_pin('9876', user['pin']))
         self.assertEqual(user['is_onboarded'], 1)

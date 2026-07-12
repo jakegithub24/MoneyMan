@@ -152,7 +152,7 @@
         </header>
         
         <!-- Forms block to wrap everything so developers can tie it to a POST endpoint -->
-        <form id="onboardingForm" method="POST" action="{{ submit_url | default('/onboarding') }}" class="flex-1 flex flex-col overflow-hidden">
+        <form id="onboardingForm" method="POST" action="{{ submit_url | default('/onboarding') }}" enctype="multipart/form-data" class="flex-1 flex flex-col overflow-hidden">
             
             <!-- Content Area -->
             <div class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-container-margin pb-6 sm:pb-stack-lg relative">
@@ -251,8 +251,64 @@
                     </div>
                 </section>
                 
-                <!-- Screen 3: Local Account Creation -->
+                <!-- Screen 3: Profile Details -->
                 <section class="onboarding-screen flex-col min-h-full pt-4 sm:pt-stack-md" id="screen3">
+                    <div class="space-y-stack-sm mb-6 text-center">
+                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Profile Details</h2>
+                        <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">Set up your account identifiers</p>
+                    </div>
+
+                    <div class="space-y-4 flex-1">
+                        <!-- Full Name -->
+                        <div class="bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
+                            <label for="fullName" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Full Name</label>
+                            <input type="text" id="fullName" name="name" required placeholder="John Doe" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
+                        </div>
+
+                        <!-- Username -->
+                        <div class="bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
+                            <label for="usernameInput" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Username</label>
+                            <input type="text" id="usernameInput" name="username" required placeholder="johndoe12" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
+                        </div>
+
+                        <!-- Cloud Sync Toggle -->
+                        <div class="flex items-start justify-between p-4 rounded-2xl bg-surface-container-low dark:bg-surface-container-high/20 border border-outline-variant/10">
+                            <div class="flex gap-3">
+                                <span class="material-symbols-outlined text-primary">cloud_sync</span>
+                                <div>
+                                    <p class="font-body-md text-body-md text-on-surface dark:text-text-main-dark font-semibold">Enable Cloud Sync</p>
+                                    <p class="text-xs text-on-surface-variant dark:text-outline mt-0.5">Backup data securely to the cloud</p>
+                                </div>
+                            </div>
+                            <!-- Switch Wrapper as Label -->
+                            <label class="relative w-12 h-7 bg-outline-variant/40 dark:bg-surface-container-high rounded-full overflow-hidden shadow-inner transition-colors shrink-0 cursor-pointer">
+                                <input class="sr-only peer" type="checkbox" name="sync_enabled" id="cloudSyncToggle" value="true"/>
+                                <div class="absolute left-1 top-1 w-5 h-5 bg-surface-light dark:bg-text-main-dark rounded-full shadow-sm transition-transform peer-checked:translate-x-5 peer-checked:bg-primary-container"></div>
+                            </label>
+                        </div>
+
+                        <!-- Cloud Password (Hidden by default, shown when Cloud Sync is checked) -->
+                        <div id="cloudPasswordSection" class="hidden bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
+                            <label for="cloudPassword" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Cloud Password</label>
+                            <input type="password" id="cloudPassword" name="password" placeholder="••••••••" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
+                        </div>
+
+                        <!-- Profile Picture Upload -->
+                        <div class="bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
+                            <label for="profilePic" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Profile Picture</label>
+                            <input type="file" id="profilePic" name="profile_pic" accept="image/*" class="w-full text-on-surface dark:text-text-main-dark font-body-md text-body-md focus:outline-none file:mr-4 file:py-1.5 file:px-3.5 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"/>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pb-stack-md pt-4 bg-surface-container-lowest dark:bg-surface-dark">
+                        <button type="button" class="w-full h-touch-target-min bg-primary text-on-primary rounded-full font-label-lg text-label-lg flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:bg-surface-tint" id="btnNext3">
+                            Continue
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Screen 4: Local Account Creation -->
+                <section class="onboarding-screen flex-col min-h-full pt-4 sm:pt-stack-md" id="screen4">
                     <div class="space-y-stack-sm mb-6 sm:mb-stack-lg text-center">
                         <div class="w-16 h-16 rounded-full bg-income-green-subtle dark:bg-primary/20 mx-auto flex items-center justify-center mb-4 text-primary dark:text-primary-fixed">
                             <span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">lock</span>
@@ -323,7 +379,8 @@
             const screens = [
                 document.getElementById('screen1'),
                 document.getElementById('screen2'),
-                document.getElementById('screen3')
+                document.getElementById('screen3'),
+                document.getElementById('screen4')
             ];
             let currentScreen = 0;
             const backBtn = document.getElementById('backBtn');
@@ -366,7 +423,43 @@
 
             btnNext2.addEventListener('click', () => navigate(1));
 
-            // Screen 3 Logic (PIN)
+            // Screen 3 Logic (Profile Details)
+            const fullName = document.getElementById('fullName');
+            const usernameInput = document.getElementById('usernameInput');
+            const cloudSyncToggle = document.getElementById('cloudSyncToggle');
+            const cloudPasswordSection = document.getElementById('cloudPasswordSection');
+            const cloudPassword = document.getElementById('cloudPassword');
+            const btnNext3 = document.getElementById('btnNext3');
+
+            cloudSyncToggle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    cloudPasswordSection.classList.remove('hidden');
+                    cloudPassword.required = true;
+                } else {
+                    cloudPasswordSection.classList.add('hidden');
+                    cloudPassword.required = false;
+                    cloudPassword.value = '';
+                }
+                validateScreen3();
+            });
+
+            function validateScreen3() {
+                const isNameOk = fullName.value.trim() !== '';
+                const isUserOk = usernameInput.value.trim() !== '';
+                const isPassOk = !cloudSyncToggle.checked || (cloudPassword.value.trim() !== '');
+                btnNext3.disabled = !(isNameOk && isUserOk && isPassOk);
+            }
+
+            fullName.addEventListener('input', validateScreen3);
+            usernameInput.addEventListener('input', validateScreen3);
+            cloudPassword.addEventListener('input', validateScreen3);
+
+            // Trigger initial validation
+            validateScreen3();
+
+            btnNext3.addEventListener('click', () => navigate(1));
+
+            // Screen 4 Logic (PIN)
             const pinInput = document.getElementById('pinInput');
             const pinConfirmInput = document.getElementById('pinConfirmInput');
             const pinDigits = document.querySelectorAll('.pin-digit');
@@ -463,7 +556,7 @@
 
                 setTimeout(() => {
                     screens[currentScreen].classList.add('active');
-                    if (currentScreen === 2) {
+                    if (currentScreen === 3) {
                         pinInput.focus();
                     }
                 }, 100);

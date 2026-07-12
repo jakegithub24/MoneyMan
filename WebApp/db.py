@@ -37,9 +37,12 @@ def init_db():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL DEFAULT 'MoneyMan User',
             username TEXT NOT NULL,
             persona TEXT NOT NULL,
             pin TEXT NOT NULL,
+            password TEXT,
+            profile_pic TEXT,
             is_onboarded INTEGER DEFAULT 0,
             sync_enabled INTEGER DEFAULT 0
         )
@@ -48,6 +51,18 @@ def init_db():
     # Safe migration for existing DBs
     try:
         cursor.execute("ALTER TABLE users ADD COLUMN sync_enabled INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN name TEXT NOT NULL DEFAULT 'MoneyMan User'")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN password TEXT")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN profile_pic TEXT")
     except sqlite3.OperationalError:
         pass
     
@@ -112,8 +127,8 @@ def seed_data(conn):
     # Seed User (Default is not onboarded, so they go through onboarding, but seeded for convenience)
     # We can seed an onboarded profile as our default seed
     cursor.execute('''
-        INSERT INTO users (username, persona, pin, is_onboarded)
-        VALUES ('Ramesh Kumar', 'retired', ?, 1)
+        INSERT INTO users (name, username, persona, pin, password, profile_pic, is_onboarded)
+        VALUES ('Ramesh Kumar', 'ramesh123', 'retired', ?, NULL, NULL, 1)
     ''', (hash_pin('1234'),))
     
     # Seed Transactions (Expense / Income)

@@ -42,15 +42,27 @@ def get_user_profile():
     user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
     conn.close()
     if user:
+        name_val = user['name'] if 'name' in user.keys() else user['username']
+        profile_pic_val = user['profile_pic'] if ('profile_pic' in user.keys() and user['profile_pic']) else None
         return {
-            'username': user['username'],
+            'username': name_val,
+            'username_val': user['username'],
             'persona': user['persona'],
+            'profile_pic': profile_pic_val,
             'user_role': f"{user['persona'].replace('_', ' ').title()} Profile"
         }
     return {
         'username': 'Happy User',
         'persona': 'student',
+        'profile_pic': None,
         'user_role': 'Student Profile'
+    }
+
+@app.context_processor
+def inject_profile_pic():
+    profile = get_user_profile()
+    return {
+        'profile_pic': profile.get('profile_pic')
     }
 
 # Helper to format numbers with commas (Indian formatting style or standard)
@@ -124,25 +136,40 @@ def index():
 def onboarding():
     if request.method == 'POST':
         persona = request.form.get('persona', 'student')
+        name = request.form.get('name', 'MoneyMan User')
+        username = request.form.get('username', 'moneyman_user')
         pin = request.form.get('pin', '1234')
         
-        # Determine default username based on persona
-        default_names = {
-            'student': 'Aarav Mehta',
-            'gig_worker': 'Kabir Singh',
-            'retired': 'Ramesh Kumar'
-        }
-        username = default_names.get(persona, 'MoneyMan User')
+        sync_enabled = 1 if request.form.get('sync_enabled') == 'true' or request.form.get('sync_enabled') == 'on' else 0
+        password = request.form.get('password')
         
         # Hash the PIN
         hashed_pin = hash_pin(pin)
         
+        # Hash the Cloud Password if sync is enabled using Argon2id helper
+        hashed_password = None
+        if sync_enabled and password:
+            hashed_password = hash_pin(password)
+            
+        # Handle profile picture upload
+        profile_pic_path = None
+        if 'profile_pic' in request.files:
+            file = request.files['profile_pic']
+            if file and file.filename != '':
+                upload_folder = os.path.join(app.root_path, 'static', 'uploads')
+                os.makedirs(upload_folder, exist_ok=True)
+                from werkzeug.utils import secure_filename
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(upload_folder, filename)
+                file.save(file_path)
+                profile_pic_path = f"/static/uploads/{filename}"
+                
         # Save or Update User in database
         conn = get_db_connection()
         conn.execute("DELETE FROM users") # Clear any old users
         conn.execute(
-            "INSERT INTO users (username, persona, pin, is_onboarded) VALUES (?, ?, ?, 1)",
-            (username, persona, hashed_pin)
+            "INSERT INTO users (name, username, persona, pin, password, profile_pic, is_onboarded, sync_enabled) VALUES (?, ?, ?, ?, ?, ?, 1, ?)",
+            (name, username, persona, hashed_pin, hashed_password, profile_pic_path, sync_enabled)
         )
         conn.commit()
         conn.close()
