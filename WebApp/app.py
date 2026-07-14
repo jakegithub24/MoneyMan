@@ -5,8 +5,11 @@ from flask import Flask, render_template, request, redirect, url_for, session
 # Import database connection helpers
 from db import get_db_connection, init_db, hash_pin, verify_pin
 
+from flask_cors import CORS
+
 app = Flask(__name__)
 app.secret_key = 'moneyman_secret_key_for_security_and_sessions'
+CORS(app, supports_credentials=True)
 
 # Ensure the database is initialized before any requests
 with app.app_context():
