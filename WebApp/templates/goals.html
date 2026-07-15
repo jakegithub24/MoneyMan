@@ -55,14 +55,14 @@
     ]) %}
 
     {% for goal in sample_goals %}
-    <article class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col gap-5 relative overflow-hidden group hover:shadow-[0px_8px_30px_0px_rgba(0,0,0,0.06)] transition-all duration-300">
+    <article class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col gap-5 relative overflow-hidden group hover:shadow-[0px_8px_30px_0px_rgba(0,0,0,0.06)] transition-all duration-300 animate-fade-in-up stagger-{{ loop.index if loop.index <= 6 else 6 }}">
         <!-- Decorative subtle background element -->
         <div class="absolute -right-10 -top-10 w-32 h-32 {{ goal.bg_decor }} rounded-full opacity-40 blur-2xl"></div>
         
         <div class="flex justify-between items-start z-10">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full {{ goal.icon_bg }} flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">{{ goal.icon }}</span>
+                <div class="w-12 h-12 rounded-full {{ goal.icon_bg }} flex items-center justify-center transition-all duration-300 group-hover:scale-105">
+                    <span class="material-symbols-outlined text-[24px] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[15deg]" style="font-variation-settings: 'FILL' 1;">{{ goal.icon }}</span>
                 </div>
                 <div>
                     <h3 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-text-main-dark">{{ goal.name }}</h3>
@@ -78,7 +78,7 @@
             <div class="flex justify-between items-end">
                 <div>
                     <p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline">Current Saved</p>
-                    <p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark font-extrabold">₹{{ goal.saved }}</p>
+                    <p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark font-extrabold animate-counter">₹{{ goal.saved }}</p>
                 </div>
                 <div class="text-right">
                     <p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline">Target</p>
@@ -86,11 +86,11 @@
                 </div>
             </div>
             <!-- Progress Bar -->
-            <div class="w-full bg-surface-container dark:bg-surface-container-high h-4 rounded-full overflow-hidden relative mt-1">
-                <div class="absolute left-0 top-0 h-full {{ goal.bar_color }} rounded-full progress-bar-fill" style="width: {{ goal.percent }}%;"></div>
+            <div class="w-full bg-surface-container dark:bg-surface-container-high h-4 rounded-full overflow-hidden relative mt-1 {% if goal.percent >= 100 %} animate-pulse-glow {% endif %}">
+                <div class="absolute left-0 top-0 h-full {{ goal.bar_color }} rounded-full progress-bar-fill transition-all duration-1000 ease-out" style="width: 0%;" data-target-width="{{ [goal.percent, 100]|min }}%"></div>
             </div>
             <div class="flex justify-between items-center mt-1">
-                <span class="font-label-sm text-label-sm text-primary dark:text-primary-fixed font-bold">{{ goal.percent }}% Complete</span>
+                <span class="font-label-sm text-label-sm text-primary dark:text-primary-fixed font-bold"><span class="animate-counter">{{ goal.percent }}</span>% Complete</span>
                 <span class="font-label-sm text-label-sm font-semibold {{ goal.status_color }}">{{ goal.status }}</span>
             </div>
         </div>
@@ -117,8 +117,8 @@
 </section>
 
 <!-- New Goal Modal -->
-<div id="goalModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-outline-variant/30 transition-transform duration-300 scale-95" id="goalModalContent">
+<div id="goalModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-outline-variant/30 transition-all duration-300 transform scale-95 opacity-0" id="goalModalContent">
         <div class="flex justify-between items-center px-6 py-4 border-b border-outline-variant/20 bg-surface-container-low dark:bg-surface-container-high/20">
             <h3 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-text-main-dark">Create Savings Goal</h3>
             <button onclick="closeGoalModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container text-on-surface-variant dark:text-text-main-dark">
@@ -173,8 +173,8 @@
 </div>
 
 <!-- Update Saved Amount Modal -->
-<div id="updateModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-outline-variant/30 transition-transform duration-300 scale-95" id="updateModalContent">
+<div id="updateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-outline-variant/30 transition-all duration-300 transform scale-95 opacity-0" id="updateModalContent">
         <div class="flex justify-between items-center px-6 py-4 border-b border-outline-variant/20 bg-surface-container-low dark:bg-surface-container-high/20">
             <div>
                 <h3 class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline uppercase tracking-wider font-bold">Update Savings</h3>
@@ -216,21 +216,19 @@
     function openGoalModal() {
         const modal = document.getElementById('goalModal');
         const content = document.getElementById('goalModalContent');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
-        }, 10);
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
     }
     
     function closeGoalModal() {
         const modal = document.getElementById('goalModal');
         const content = document.getElementById('goalModalContent');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 150);
+        content.classList.add('scale-95', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100', 'pointer-events-auto');
     }
 
     // Update Goal Modal
@@ -243,22 +241,22 @@
 
         const modal = document.getElementById('updateModal');
         const content = document.getElementById('updateModalContent');
-        modal.classList.remove('hidden');
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
         setTimeout(() => {
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
             document.getElementById('savedAmount').focus();
-        }, 10);
+        }, 100);
     }
     
     function closeUpdateModal() {
         const modal = document.getElementById('updateModal');
         const content = document.getElementById('updateModalContent');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 150);
+        content.classList.add('scale-95', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100', 'pointer-events-auto');
     }
 
     // Close modals on click outside

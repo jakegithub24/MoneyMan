@@ -129,11 +129,20 @@
         .onboarding-screen {
             display: none;
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
         }
         .onboarding-screen.active {
             display: flex;
-            opacity: 1;
+            animation: screenEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes screenEnter {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
     </style>
 </head>

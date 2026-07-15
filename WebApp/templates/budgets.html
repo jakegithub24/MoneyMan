@@ -57,7 +57,7 @@
     ]) %}
 
     {% for budget in sample_budgets %}
-    <article class="relative bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_rgba(0,0,0,0.03)] border {% if budget.status == 'danger' %} border-error/20 bg-expense-red-subtle/10 dark:bg-error/5 {% else %} border-outline-variant/20 {% endif %} flex flex-col justify-between interactive-hover overflow-hidden min-h-[160px]">
+    <article class="relative bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_rgba(0,0,0,0.03)] border {% if budget.status == 'danger' %} border-error/20 bg-expense-red-subtle/10 dark:bg-error/5 {% else %} border-outline-variant/20 {% endif %} flex flex-col justify-between interactive-hover overflow-hidden min-h-[160px] animate-fade-in-up stagger-{{ loop.index if loop.index <= 6 else 6 }}">
         
         <!-- Alerts Banner overlay -->
         {% if budget.status == 'warning' %}
@@ -92,8 +92,8 @@
 
         <!-- Progress Bar -->
         <div class="w-full bg-surface-container dark:bg-surface-container-high h-3.5 rounded-full overflow-hidden mt-auto">
-            <div class="{{ budget.color }} h-full rounded-full transition-all duration-1000 ease-out" 
-                 style="width: {{ [budget.percent, 100]|min }}%;"></div>
+            <div class="progress-bar-fill {{ budget.color }} h-full rounded-full transition-all duration-1000 ease-out" 
+                 style="width: 0%;" data-target-width="{{ [budget.percent, 100]|min }}%"></div>
         </div>
     </article>
     {% endfor %}
@@ -113,8 +113,8 @@
 </section>
 
 <!-- Create Budget Modal (Dynamic overlay) -->
-<div id="budgetModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-outline-variant/30 transition-transform duration-300 scale-95" id="modalContent">
+<div id="budgetModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-outline-variant/30 transition-all duration-300 transform scale-95 opacity-0" id="modalContent">
         <!-- Modal Header -->
         <div class="flex justify-between items-center px-6 py-4 border-b border-outline-variant/20 bg-surface-container-low dark:bg-surface-container-high/20">
             <h3 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-text-main-dark">Create Budget</h3>
@@ -177,21 +177,19 @@
     function openBudgetModal() {
         const modal = document.getElementById('budgetModal');
         const content = document.getElementById('modalContent');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
-        }, 10);
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
     }
     
     function closeBudgetModal() {
         const modal = document.getElementById('budgetModal');
         const content = document.getElementById('modalContent');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 150);
+        content.classList.add('scale-95', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100', 'pointer-events-auto');
     }
 
     // Close modal on click outside content

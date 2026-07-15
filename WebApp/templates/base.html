@@ -287,13 +287,112 @@
         }
 
         .interactive-hover {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .interactive-hover:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px) scale(1.015);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
+        }
+        .dark .interactive-hover:hover {
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.4);
+            background-color: rgba(255, 255, 255, 0.03) !important;
         }
         .interactive-hover:active {
-            transform: scale(0.98);
+            transform: translateY(-1px) scale(0.99);
+        }
+
+        /* Premium animations and keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(46, 125, 50, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(46, 125, 50, 0.6); }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .animate-pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        /* Stagger animation delay helper classes */
+        .stagger-1 { animation-delay: 60ms; }
+        .stagger-2 { animation-delay: 120ms; }
+        .stagger-3 { animation-delay: 180ms; }
+        .stagger-4 { animation-delay: 240ms; }
+        .stagger-5 { animation-delay: 300ms; }
+        .stagger-6 { animation-delay: 360ms; }
+
+        /* Sidebar nav links animations */
+        .sidebar-nav-link {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleX(0);
+            width: 4px;
+            height: 60%;
+            background-color: #0d631b;
+            border-radius: 0 4px 4px 0;
+            transition: transform 0.25s ease;
+            transform-origin: left;
+        }
+        .dark .sidebar-nav-link::before {
+            background-color: #88d982;
+        }
+        .sidebar-nav-link:hover::before {
+            transform: translateY(-50%) scaleX(1);
+        }
+        .sidebar-nav-link:hover {
+            transform: translateX(4px);
+            background-color: rgba(13, 99, 27, 0.05) !important;
+        }
+        .dark .sidebar-nav-link:hover {
+            background-color: rgba(136, 217, 130, 0.05) !important;
+        }
+        .sidebar-nav-link:hover span.material-symbols-outlined {
+            transform: scale(1.15) rotate(5deg);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
         /* Modern range slider styling */
@@ -351,55 +450,55 @@
             <!-- Sidebar Navigation Links -->
             <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                 <a href="{{ url_for('dashboard') if url_for else '/dashboard' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'dashboard' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg {% if active_page == 'dashboard' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'dashboard' %}1{% else %}0{% endif %};">home</span>
                     <span>Dashboard</span>
                 </a>
                 
                 <a href="{{ url_for('transactions') if url_for else '/transactions' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'transactions' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg {% if active_page == 'transactions' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'transactions' %}1{% else %}0{% endif %};">receipt_long</span>
                     <span>Transactions</span>
                 </a>
                 
                 <a href="{{ url_for('budgets') if url_for else '/budgets' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'budgets' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg {% if active_page == 'budgets' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'budgets' %}1{% else %}0{% endif %};">leaderboard</span>
                     <span>Budgets</span>
                 </a>
                 
                 <a href="{{ url_for('emi') if url_for else '/emi' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'emi' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg {% if active_page == 'emi' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'emi' %}1{% else %}0{% endif %};">calculate</span>
                     <span>EMI Tracker</span>
                 </a>
                 
                 <a href="{{ url_for('goals') if url_for else '/goals' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'goals' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg {% if active_page == 'goals' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'goals' %}1{% else %}0{% endif %};">flag</span>
                     <span>Savings Goals</span>
                 </a>
                 
                 <a href="{{ url_for('ai_analysis') if url_for else '/ai-analysis' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'ai_analysis' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg {% if active_page == 'ai_analysis' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'ai_analysis' %}1{% else %}0{% endif %};">auto_awesome</span>
                     <span>AI Insights</span>
                 </a>
                 
                 <a href="{{ url_for('learn') if url_for else '/learn' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'learn' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg {% if active_page == 'learn' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'learn' %}1{% else %}0{% endif %};">school</span>
                     <span>Learn & Glossary</span>
                 </a>
 
                 <a href="{{ url_for('settings') if url_for else '/settings' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg transition-colors {% if active_page == 'settings' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg {% if active_page == 'settings' %} bg-primary-container text-on-primary {% else %} text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container {% endif %}">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'settings' %}1{% else %}0{% endif %};">settings</span>
                     <span>Settings</span>
                 </a>
 
                 <a href="{{ url_for('onboarding') if url_for else '/onboarding' }}" 
-                   class="flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container transition-colors">
+                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container">
                     <span class="material-symbols-outlined">badge</span>
                     <span>Launch Onboarding</span>
                 </a>
@@ -504,7 +603,7 @@
             </header>
             
             <!-- Canvas Window -->
-            <main class="flex-1 overflow-y-auto px-4 md:px-8 py-6 pb-24 md:pb-8">
+            <main class="flex-1 overflow-y-auto px-4 md:px-8 py-6 pb-24 md:pb-8 animate-fade-in-up">
                 {% block content %}{% endblock %}
             </main>
             

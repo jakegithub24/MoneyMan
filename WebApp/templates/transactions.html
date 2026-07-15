@@ -24,18 +24,18 @@
     </div>
 
     <!-- Filters Section -->
-    <section class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-outline-variant/20 shadow-sm flex flex-wrap gap-3 items-center justify-between">
+    <section class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-outline-variant/20 shadow-sm flex flex-wrap gap-3 items-center justify-between animate-fade-in-up stagger-1">
         <div class="flex flex-wrap gap-2">
             <a href="?type=all&category={{ selected_category }}" 
-               class="h-9 px-4 rounded-full flex items-center justify-center text-xs font-semibold border transition-all {% if selected_type == 'all' %} bg-primary text-on-primary border-primary {% else %} bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:bg-surface-container {% endif %}">
+               class="h-9 px-4 rounded-full flex items-center justify-center text-xs font-semibold border transition-all hover:scale-[1.02] active:scale-[0.98] {% if selected_type == 'all' %} bg-primary text-on-primary border-primary {% else %} bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:bg-surface-container {% endif %}">
                 All Types
             </a>
             <a href="?type=income&category={{ selected_category }}" 
-               class="h-9 px-4 rounded-full flex items-center justify-center text-xs font-semibold border transition-all {% if selected_type == 'income' %} bg-primary-container text-on-primary border-primary {% else %} bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:bg-surface-container {% endif %}">
+               class="h-9 px-4 rounded-full flex items-center justify-center text-xs font-semibold border transition-all hover:scale-[1.02] active:scale-[0.98] {% if selected_type == 'income' %} bg-primary-container text-on-primary border-primary {% else %} bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:bg-surface-container {% endif %}">
                 Income only
             </a>
             <a href="?type=expense&category={{ selected_category }}" 
-               class="h-9 px-4 rounded-full flex items-center justify-center text-xs font-semibold border transition-all {% if selected_type == 'expense' %} bg-secondary-container text-on-secondary border-secondary {% else %} bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:bg-surface-container {% endif %}">
+               class="h-9 px-4 rounded-full flex items-center justify-center text-xs font-semibold border transition-all hover:scale-[1.02] active:scale-[0.98] {% if selected_type == 'expense' %} bg-secondary-container text-on-secondary border-secondary {% else %} bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:bg-surface-container {% endif %}">
                 Expense only
             </a>
         </div>
@@ -56,7 +56,7 @@
     </section>
 
     <!-- Transactions List -->
-    <section class="bg-surface-light dark:bg-surface-dark rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <section class="bg-surface-light dark:bg-surface-dark rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden animate-fade-in-up stagger-2">
         {% if transactions %}
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -72,7 +72,7 @@
                 </thead>
                 <tbody class="divide-y divide-outline-variant/10">
                     {% for tx in transactions %}
-                    <tr class="transaction-row hover:bg-surface-container-lowest/50 dark:hover:bg-surface-container/10 transition-transform duration-200 text-sm select-none"
+                    <tr class="transaction-row hover:bg-surface-container-lowest/50 dark:hover:bg-surface-container/10 transition-all duration-200 hover:scale-[1.005] hover:shadow-sm text-sm select-none animate-fade-in-up stagger-{{ loop.index if loop.index <= 6 else 6 }}"
                         data-id="{{ tx.id }}"
                         ondblclick="location.href='/transaction/edit/{{ tx.id }}'"
                         title="Double-click to edit, swipe left to delete">

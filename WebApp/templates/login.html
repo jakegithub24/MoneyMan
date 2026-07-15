@@ -60,32 +60,60 @@
         }
         .pin-dot.filled {
             background-color: #0d631b;
-            transform: scale(1.15);
+            transform: scale(1.25);
+            box-shadow: 0 0 8px rgba(13, 99, 27, 0.4);
         }
         .dark .pin-dot.filled {
             background-color: #a3f69c;
+            box-shadow: 0 0 8px rgba(163, 246, 156, 0.4);
+        }
+
+        /* Lockscreen Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+            20%, 40%, 60%, 80% { transform: translateX(6px); }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .animate-shake {
+            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
     </style>
 </head>
 <body class="bg-white dark:bg-[#1E1E1E] sm:bg-slate-50 sm:dark:bg-[#121212] text-slate-800 dark:text-[#f0f1f1] min-h-screen flex flex-col justify-between p-0 sm:p-6">
     
     <!-- Top Spacer / App branding -->
-    <header class="flex justify-center pt-8 sm:pt-8">
-        <div class="flex items-center gap-2 text-primary dark:text-[#a3f69c]">
+    <header class="flex justify-center pt-8 sm:pt-8 animate-fade-in-up">
+        <div class="flex items-center gap-2 text-primary dark:text-[#a3f69c] transition-transform hover:scale-105 duration-300">
             <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
             <span class="font-bold text-2xl tracking-tight">MoneyMan</span>
         </div>
     </header>
 
     <!-- Center Card -->
-    <main class="max-w-md w-full mx-auto bg-transparent sm:bg-white sm:dark:bg-[#1E1E1E] p-4 sm:p-8 rounded-none sm:rounded-3xl border-none sm:border sm:border-slate-200/50 dark:sm:border-zinc-800/60 shadow-none sm:shadow-xl space-y-6 text-center">
+    <main class="max-w-md w-full mx-auto bg-transparent sm:bg-white sm:dark:bg-[#1E1E1E] p-4 sm:p-8 rounded-none sm:rounded-3xl border-none sm:border sm:border-slate-200/50 dark:sm:border-zinc-800/60 shadow-none sm:shadow-xl space-y-6 text-center animate-fade-in-up" style="animation-delay: 100ms;">
         <div class="space-y-2">
             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Welcome Back, {{ username }}</h2>
             <p class="text-sm text-slate-500 dark:text-zinc-400">Enter your 4-digit PIN to unlock secure details</p>
         </div>
 
         <!-- PIN Status Dots -->
-        <div class="flex justify-center gap-4 py-4">
+        <div class="flex justify-center gap-4 py-4 {% if error %} animate-shake {% endif %}">
             <div class="pin-dot" id="dot1"></div>
             <div class="pin-dot" id="dot2"></div>
             <div class="pin-dot" id="dot3"></div>
@@ -93,7 +121,7 @@
         </div>
 
         {% if error %}
-        <div class="p-3 text-xs bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/30 rounded-xl">
+        <div class="p-3 text-xs bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/30 rounded-xl animate-fade-in-up">
             {{ error }}
         </div>
         {% endif %}
