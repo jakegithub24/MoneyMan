@@ -170,6 +170,10 @@ def onboarding():
         # Save or Update User in database
         conn = get_db_connection()
         conn.execute("DELETE FROM users") # Clear any old users
+        conn.execute("DELETE FROM transactions")
+        conn.execute("DELETE FROM budgets")
+        conn.execute("DELETE FROM emis")
+        conn.execute("DELETE FROM goals")
         conn.execute(
             "INSERT INTO users (name, username, persona, pin, password, profile_pic, is_onboarded, sync_enabled) VALUES (?, ?, ?, ?, ?, ?, 1, ?)",
             (name, username, persona, hashed_pin, hashed_password, profile_pic_path, sync_enabled)
@@ -218,6 +222,10 @@ def logout():
     session.clear()
     conn = get_db_connection()
     conn.execute("DELETE FROM users")
+    conn.execute("DELETE FROM transactions")
+    conn.execute("DELETE FROM budgets")
+    conn.execute("DELETE FROM emis")
+    conn.execute("DELETE FROM goals")
     conn.commit()
     conn.close()
     return redirect(url_for('onboarding'))
