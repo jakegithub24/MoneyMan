@@ -121,6 +121,103 @@ class MoneyManTestCase(unittest.TestCase):
         self.assertEqual(user['is_onboarded'], 1)
         conn.close()
 
+    def test_onboarding_cloud_user_path(self):
+        """Test onboarding submission via existing cloud user path."""
+        # Clear users first
+        conn = get_db_connection()
+        conn.execute("DELETE FROM users")
+        conn.commit()
+        conn.close()
+        
+        # Submit onboarding with cloud sync credentials and defaults
+        response = self.client.post('/onboarding', data={
+            'sync_enabled': 'true',
+            'username': 'existing_cloud_user',
+            'password': 'cloud_password123',
+            'name': 'existing_cloud_user',
+            'persona': 'student',
+            'pin': '4321'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'existing_cloud_user', response.data)
+        
+        # Verify db entry
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+        self.assertIsNotNone(user)
+        self.assertEqual(user['username'], 'existing_cloud_user')
+        self.assertEqual(user['name'], 'existing_cloud_user')
+        self.assertEqual(user['sync_enabled'], 1)
+        self.assertTrue(verify_pin('4321', user['pin']))
+        self.assertTrue(verify_pin('cloud_password123', user['password']))
+        conn.close()
+
+    def test_onboarding_new_user_local_path(self):
+        """Test onboarding submission for a new local-only profile."""
+        # Clear users first
+        conn = get_db_connection()
+        conn.execute("DELETE FROM users")
+        conn.commit()
+        conn.close()
+        
+        # Submit onboarding for local only
+        response = self.client.post('/onboarding', data={
+            'sync_enabled': 'false',
+            'name': 'New Local User',
+            'username': 'newlocal',
+            'persona': 'gig_worker',
+            'pin': '1111'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'New Local User', response.data)
+        
+        # Verify db entry
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+        self.assertIsNotNone(user)
+        self.assertEqual(user['name'], 'New Local User')
+        self.assertEqual(user['username'], 'newlocal')
+        self.assertEqual(user['persona'], 'gig_worker')
+        self.assertEqual(user['sync_enabled'], 0)
+        self.assertIsNone(user['password'])
+        self.assertTrue(verify_pin('1111', user['pin']))
+        conn.close()
+
+    def test_onboarding_new_user_cloud_sync_path(self):
+        """Test onboarding submission for a new cloud sync profile."""
+        # Clear users first
+        conn = get_db_connection()
+        conn.execute("DELETE FROM users")
+        conn.commit()
+        conn.close()
+        
+        # Submit onboarding for new profile + cloud sync
+        response = self.client.post('/onboarding', data={
+            'sync_enabled': 'true',
+            'name': 'New Cloud User',
+            'username': 'newcloud',
+            'persona': 'retired',
+            'password': 'cloud_sync_password',
+            'pin': '2222'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'New Cloud User', response.data)
+        
+        # Verify db entry
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+        self.assertIsNotNone(user)
+        self.assertEqual(user['name'], 'New Cloud User')
+        self.assertEqual(user['username'], 'newcloud')
+        self.assertEqual(user['persona'], 'retired')
+        self.assertEqual(user['sync_enabled'], 1)
+        self.assertTrue(verify_pin('cloud_sync_password', user['password']))
+        self.assertTrue(verify_pin('2222', user['pin']))
+        conn.close()
+
     def test_add_transaction(self):
         """Test transaction creation and listing."""
         response = self.client.post('/transaction/add', data={

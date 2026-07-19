@@ -188,7 +188,7 @@
                                 <input class="form-checkbox h-6 w-6 text-primary rounded border-outline-variant dark:border-outline focus:ring-primary focus:ring-opacity-50 transition duration-150 ease-in-out cursor-pointer" id="privacyToggle" required="" type="checkbox"/>
                             </div>
                             <div class="flex-1 pl-2">
-                                <p class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark">I agree to the Terms &amp; Privacy Policy.</p>
+                                <p class="font-label-lg text-label-lg text-on-surface dark:text-text-main-dark">I agree to the <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-primary dark:text-primary-fixed hover:underline font-bold">Terms</a> &amp; <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-primary dark:text-primary-fixed hover:underline font-bold">Privacy Policy</a>.</p>
                                 <p class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">We respect your privacy. All financial data is encrypted and saved locally on your device.</p>
                             </div>
                         </label>
@@ -199,58 +199,63 @@
                     </div>
                 </section>
                 
-                <!-- Screen 2: Persona Selection -->
+                <!-- Screen 2: Already a Cloud User? -->
                 <section class="onboarding-screen flex-col min-h-full pt-4 sm:pt-stack-md" id="screen2">
-                    <div class="space-y-stack-sm mb-stack-md text-center">
-                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Who are you?</h2>
-                        <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">We'll tailor budgets and insights to fit your profile.</p>
+                    <div class="space-y-stack-sm mb-6 text-center">
+                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Already a cloud user?</h2>
+                        <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">Opt in to connect and sync your profile.</p>
                     </div>
                     
-                    <div aria-labelledby="persona-label" class="flex flex-col space-y-gutter flex-1" role="radiogroup">
-                        <!-- Persona Option 1 -->
-                        <label class="persona-card flex items-center p-4 sm:p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
-                            <input class="sr-only" name="persona" type="radio" value="student" required/>
+                    <div class="flex flex-col space-y-gutter flex-1">
+                        <!-- Hidden fields to hold backend values -->
+                        <input type="hidden" name="sync_enabled" id="syncEnabledInput" value="false">
+                        <input type="hidden" name="name" id="hiddenNameInput" value="Cloud User" disabled>
+                        <input type="hidden" name="persona" id="hiddenPersonaInput" value="student" disabled>
+
+                        <!-- Option 1: Yes -->
+                        <label class="flex items-center p-4 sm:p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                            <input class="sr-only" name="already_cloud" type="radio" value="yes" required/>
                             <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
-                                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">school</span>
+                                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">cloud_sync</span>
                             </div>
                             <div class="flex-1 pl-2">
-                                <span class="block font-headline-md text-headline-md text-on-surface dark:text-text-main-dark">Student</span>
-                                <span class="block font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">Manage allowances &amp; study costs</span>
+                                <span class="block font-headline-md text-headline-md text-on-surface dark:text-text-main-dark">Yes, cloud sync user</span>
+                                <span class="block font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">Connect your existing cloud profile</span>
                             </div>
                             <div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center shrink-0 check-indicator transition-all">
                                 <span class="material-symbols-outlined text-[16px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
                             </div>
                         </label>
                         
-                        <!-- Persona Option 2 -->
-                        <label class="persona-card flex items-center p-4 sm:p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
-                            <input class="sr-only" name="persona" type="radio" value="gig_worker"/>
+                        <!-- Option 2: No -->
+                        <label class="flex items-center p-4 sm:p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+                            <input class="sr-only" name="already_cloud" type="radio" value="no"/>
                             <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
-                                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">two_wheeler</span>
+                                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">person_add</span>
                             </div>
                             <div class="flex-1 pl-2">
-                                <span class="block font-headline-md text-headline-md text-on-surface dark:text-text-main-dark">Gig Worker</span>
-                                <span class="block font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">Track variable income &amp; fuel costs</span>
+                                <span class="block font-headline-md text-headline-md text-on-surface dark:text-text-main-dark">No, new profile</span>
+                                <span class="block font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">Set up a fresh profile and budget</span>
                             </div>
                             <div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center shrink-0 check-indicator transition-all">
                                 <span class="material-symbols-outlined text-[16px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
                             </div>
                         </label>
-                        
-                        <!-- Persona Option 3 -->
-                        <label class="persona-card flex items-center p-4 sm:p-card-padding bg-surface dark:bg-surface-container-high/20 rounded-2xl border border-outline-variant/40 dark:border-outline/20 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary has-[:checked]:shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
-                            <input class="sr-only" name="persona" type="radio" value="retired"/>
-                            <div class="w-12 h-12 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-gutter shrink-0 text-primary dark:text-primary-fixed">
-                                <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">chair_alt</span>
+
+                        <!-- Cloud Credentials Section (shown dynamically) -->
+                        <div id="cloudCredentialsSection" class="hidden space-y-4 mt-4 transition-all duration-300">
+                            <!-- Cloud Username -->
+                            <div class="bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
+                                <label for="cloudUsername" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Cloud Username</label>
+                                <input type="text" id="cloudUsername" name="username" placeholder="e.g., johndoe" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
                             </div>
-                            <div class="flex-1 pl-2">
-                                <span class="block font-headline-md text-headline-md text-on-surface dark:text-text-main-dark">Retired / Elderly</span>
-                                <span class="block font-label-sm text-label-sm text-on-surface-variant dark:text-outline mt-1">Monitor pensions &amp; medical bills</span>
+
+                            <!-- Cloud Password -->
+                            <div class="bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
+                                <label for="cloudPassword" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Cloud Password</label>
+                                <input type="password" id="cloudPassword" name="password" placeholder="••••••••" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
                             </div>
-                            <div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center shrink-0 check-indicator transition-all">
-                                <span class="material-symbols-outlined text-[16px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
-                            </div>
-                        </label>
+                        </div>
                     </div>
                     
                     <div class="mt-auto pb-stack-md pt-4 bg-surface-container-lowest dark:bg-surface-dark">
@@ -260,52 +265,112 @@
                     </div>
                 </section>
                 
-                <!-- Screen 3: Profile Details -->
+                <!-- Screen 3: Create Profile -->
                 <section class="onboarding-screen flex-col min-h-full pt-4 sm:pt-stack-md" id="screen3">
-                    <div class="space-y-stack-sm mb-6 text-center">
-                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Profile Details</h2>
-                        <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">Set up your account identifiers</p>
+                    <div class="space-y-stack-sm mb-4 text-center">
+                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Create Profile</h2>
+                        <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">Choose a persona and enter your profile details</p>
                     </div>
 
                     <div class="space-y-4 flex-1">
+                        <!-- Profile/Persona Options -->
+                        <div class="space-y-2">
+                            <span class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider block mb-1">Select Persona</span>
+                            <div class="grid grid-cols-3 gap-2">
+                                <!-- Student Option -->
+                                <label class="flex flex-col items-center p-3 bg-surface dark:bg-surface-container-high/20 rounded-xl border border-outline-variant/40 dark:border-outline/20 cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary relative">
+                                    <input class="sr-only" name="persona" type="radio" value="student"/>
+                                    <div class="w-8 h-8 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mb-1 text-primary dark:text-primary-fixed">
+                                        <span class="material-symbols-outlined text-[18px]">school</span>
+                                    </div>
+                                    <span class="text-[13px] font-bold text-on-surface dark:text-text-main-dark">Student</span>
+                                    <div class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full border border-outline-variant flex items-center justify-center persona-check-indicator transition-all">
+                                        <span class="material-symbols-outlined text-[10px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+                                    </div>
+                                </label>
+
+                                <!-- Gig Worker Option -->
+                                <label class="flex flex-col items-center p-3 bg-surface dark:bg-surface-container-high/20 rounded-xl border border-outline-variant/40 dark:border-outline/20 cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary relative">
+                                    <input class="sr-only" name="persona" type="radio" value="gig_worker"/>
+                                    <div class="w-8 h-8 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mb-1 text-primary dark:text-primary-fixed">
+                                        <span class="material-symbols-outlined text-[18px]">two_wheeler</span>
+                                    </div>
+                                    <span class="text-[13px] font-bold text-on-surface dark:text-text-main-dark text-center">Gig-worker</span>
+                                    <div class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full border border-outline-variant flex items-center justify-center persona-check-indicator transition-all">
+                                        <span class="material-symbols-outlined text-[10px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+                                    </div>
+                                </label>
+
+                                <!-- Elderly Option -->
+                                <label class="flex flex-col items-center p-3 bg-surface dark:bg-surface-container-high/20 rounded-xl border border-outline-variant/40 dark:border-outline/20 cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary relative">
+                                    <input class="sr-only" name="persona" type="radio" value="retired"/>
+                                    <div class="w-8 h-8 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mb-1 text-primary dark:text-primary-fixed">
+                                        <span class="material-symbols-outlined text-[18px]">chair_alt</span>
+                                    </div>
+                                    <span class="text-[13px] font-bold text-on-surface dark:text-text-main-dark text-center">Elderly</span>
+                                    <div class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full border border-outline-variant flex items-center justify-center persona-check-indicator transition-all">
+                                        <span class="material-symbols-outlined text-[10px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
                         <!-- Full Name -->
                         <div class="bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
                             <label for="fullName" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Full Name</label>
-                            <input type="text" id="fullName" name="name" required placeholder="John Doe" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
+                            <input type="text" id="fullName" name="name" placeholder="John Doe" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
                         </div>
 
                         <!-- Username -->
                         <div class="bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
                             <label for="usernameInput" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Username</label>
-                            <input type="text" id="usernameInput" name="username" required placeholder="johndoe12" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
-                        </div>
-
-                        <!-- Cloud Sync Toggle -->
-                        <div class="flex items-start justify-between p-4 rounded-2xl bg-surface-container-low dark:bg-surface-container-high/20 border border-outline-variant/10">
-                            <div class="flex gap-3">
-                                <span class="material-symbols-outlined text-primary">cloud_sync</span>
-                                <div>
-                                    <p class="font-body-md text-body-md text-on-surface dark:text-text-main-dark font-semibold">Enable Cloud Sync</p>
-                                    <p class="text-xs text-on-surface-variant dark:text-outline mt-0.5">Backup data securely to the cloud</p>
-                                </div>
-                            </div>
-                            <!-- Switch Wrapper as Label -->
-                            <label class="relative w-12 h-7 bg-outline-variant/40 dark:bg-surface-container-high rounded-full overflow-hidden shadow-inner transition-colors shrink-0 cursor-pointer">
-                                <input class="sr-only peer" type="checkbox" name="sync_enabled" id="cloudSyncToggle" value="true"/>
-                                <div class="absolute left-1 top-1 w-5 h-5 bg-surface-light dark:bg-text-main-dark rounded-full shadow-sm transition-transform peer-checked:translate-x-5 peer-checked:bg-primary-container"></div>
-                            </label>
-                        </div>
-
-                        <!-- Cloud Password (Hidden by default, shown when Cloud Sync is checked) -->
-                        <div id="cloudPasswordSection" class="hidden bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
-                            <label for="cloudPassword" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Cloud Password</label>
-                            <input type="password" id="cloudPassword" name="password" placeholder="••••••••" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
+                            <input type="text" id="usernameInput" name="username" placeholder="johndoe12" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
                         </div>
 
                         <!-- Profile Picture Upload -->
                         <div class="bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
                             <label for="profilePic" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Profile Picture</label>
                             <input type="file" id="profilePic" name="profile_pic" accept="image/*" class="w-full text-on-surface dark:text-text-main-dark font-body-md text-body-md focus:outline-none file:mr-4 file:py-1.5 file:px-3.5 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"/>
+                        </div>
+
+                        <!-- Account Storage Type: Local vs Cloud -->
+                        <div class="space-y-2">
+                            <span class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider block mb-1">Account Storage Mode</span>
+                            <div class="grid grid-cols-2 gap-3">
+                                <!-- Local Only -->
+                                <label class="flex items-center p-3 bg-surface dark:bg-surface-container-high/20 rounded-xl border border-outline-variant/40 dark:border-outline/20 cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary relative">
+                                    <input class="sr-only" name="account_type" type="radio" value="local" checked/>
+                                    <div class="w-8 h-8 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-2 text-primary dark:text-primary-fixed shrink-0">
+                                        <span class="material-symbols-outlined text-[18px]">phone_android</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="block text-[13px] font-bold text-on-surface dark:text-text-main-dark">Local Only</span>
+                                    </div>
+                                    <div class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full border border-outline-variant flex items-center justify-center account-type-indicator transition-all bg-primary border-primary">
+                                        <span class="material-symbols-outlined text-[10px] text-white transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+                                    </div>
+                                </label>
+
+                                <!-- Cloud Sync -->
+                                <label class="flex items-center p-3 bg-surface dark:bg-surface-container-high/20 rounded-xl border border-outline-variant/40 dark:border-outline/20 cursor-pointer transition-all duration-200 hover:bg-surface-container dark:hover:bg-surface-container-high/40 has-[:checked]:bg-income-green-subtle dark:has-[:checked]:bg-primary/20 has-[:checked]:border-primary relative">
+                                    <input class="sr-only" name="account_type" type="radio" value="cloud"/>
+                                    <div class="w-8 h-8 rounded-full bg-surface-container dark:bg-surface-container-high flex items-center justify-center mr-2 text-primary dark:text-primary-fixed shrink-0">
+                                        <span class="material-symbols-outlined text-[18px]">cloud_sync</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="block text-[13px] font-bold text-on-surface dark:text-text-main-dark">Cloud Sync</span>
+                                    </div>
+                                    <div class="absolute top-1.5 right-1.5 w-4 h-4 rounded-full border border-outline-variant flex items-center justify-center account-type-indicator transition-all">
+                                        <span class="material-symbols-outlined text-[10px] text-white opacity-0 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Cloud Password for new profile (Hidden by default, shown when Cloud Sync is selected) -->
+                        <div id="newProfileCloudPasswordSection" class="hidden bg-surface-container-low dark:bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/30 flex flex-col gap-1.5 focus-within:border-primary transition-all">
+                            <label for="newProfileCloudPassword" class="text-xs text-on-surface-variant dark:text-outline font-semibold uppercase tracking-wider">Create Cloud Password</label>
+                            <input type="password" id="newProfileCloudPassword" name="password" placeholder="••••••••" class="bg-transparent border-none p-0 focus:ring-0 w-full text-on-surface dark:text-text-main-dark placeholder:text-outline font-body-md text-body-md focus:outline-none"/>
                         </div>
                     </div>
 
@@ -393,6 +458,7 @@
             ];
             let currentScreen = 0;
             const backBtn = document.getElementById('backBtn');
+            let path = 'new_profile'; // 'cloud_user' or 'new_profile'
             
             // Screen 1 Logic
             const privacyToggle = document.getElementById('privacyToggle');
@@ -404,16 +470,21 @@
 
             btnNext1.addEventListener('click', () => navigate(1));
 
-            // Screen 2 Logic
-            const personaRadios = document.querySelectorAll('input[name="persona"]');
+            // Screen 2 Logic (Already a Cloud User?)
+            const cloudUserRadios = document.querySelectorAll('input[name="already_cloud"]');
+            const cloudCredentialsSection = document.getElementById('cloudCredentialsSection');
+            const cloudUsername = document.getElementById('cloudUsername');
+            const cloudPassword = document.getElementById('cloudPassword');
             const btnNext2 = document.getElementById('btnNext2');
+            
+            const syncEnabledInput = document.getElementById('syncEnabledInput');
+            const hiddenNameInput = document.getElementById('hiddenNameInput');
+            const hiddenPersonaInput = document.getElementById('hiddenPersonaInput');
 
-            personaRadios.forEach(radio => {
+            cloudUserRadios.forEach(radio => {
                 radio.addEventListener('change', () => {
-                    btnNext2.disabled = false;
-                    
-                    // Reset all check indicators
-                    document.querySelectorAll('.check-indicator').forEach(indicator => {
+                    // Reset all check indicators on screen 2
+                    document.querySelectorAll('#screen2 .check-indicator').forEach(indicator => {
                         indicator.classList.remove('bg-primary', 'border-primary');
                         indicator.classList.add('border-outline-variant');
                         indicator.querySelector('span').classList.add('opacity-0');
@@ -426,46 +497,188 @@
                         indicator.classList.remove('border-outline-variant');
                         indicator.classList.add('bg-primary', 'border-primary');
                         indicator.querySelector('span').classList.remove('opacity-0');
+                        
+                        if (radio.value === 'yes') {
+                            path = 'cloud_user';
+                            cloudCredentialsSection.classList.remove('hidden');
+                            cloudUsername.required = true;
+                            cloudPassword.required = true;
+                            cloudUsername.disabled = false;
+                            cloudPassword.disabled = false;
+                            
+                            toggleInputsForPath();
+                            validateScreen2();
+                        } else {
+                            path = 'new_profile';
+                            cloudCredentialsSection.classList.add('hidden');
+                            cloudUsername.required = false;
+                            cloudPassword.required = false;
+                            cloudUsername.disabled = true;
+                            cloudPassword.disabled = true;
+                            cloudUsername.value = '';
+                            cloudPassword.value = '';
+                            
+                            toggleInputsForPath();
+                            btnNext2.disabled = false;
+                        }
                     }
                 });
             });
 
+            function validateScreen2() {
+                if (path === 'cloud_user') {
+                    const userOk = cloudUsername.value.trim() !== '';
+                    const passOk = cloudPassword.value.trim() !== '';
+                    btnNext2.disabled = !(userOk && passOk);
+                    
+                    // Sync values to hidden inputs
+                    hiddenNameInput.value = cloudUsername.value.trim();
+                } else {
+                    btnNext2.disabled = false;
+                }
+            }
+
+            cloudUsername.addEventListener('input', validateScreen2);
+            cloudPassword.addEventListener('input', validateScreen2);
             btnNext2.addEventListener('click', () => navigate(1));
 
-            // Screen 3 Logic (Profile Details)
+            // Screen 3 Logic (Create Profile)
             const fullName = document.getElementById('fullName');
             const usernameInput = document.getElementById('usernameInput');
-            const cloudSyncToggle = document.getElementById('cloudSyncToggle');
-            const cloudPasswordSection = document.getElementById('cloudPasswordSection');
-            const cloudPassword = document.getElementById('cloudPassword');
+            const newProfileCloudPassword = document.getElementById('newProfileCloudPassword');
+            const newProfileCloudPasswordSection = document.getElementById('newProfileCloudPasswordSection');
+            const personaRadios = document.querySelectorAll('input[name="persona"]');
+            const profilePic = document.getElementById('profilePic');
+            const accountTypeRadios = document.querySelectorAll('input[name="account_type"]');
             const btnNext3 = document.getElementById('btnNext3');
 
-            cloudSyncToggle.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    cloudPasswordSection.classList.remove('hidden');
-                    cloudPassword.required = true;
-                } else {
-                    cloudPasswordSection.classList.add('hidden');
-                    cloudPassword.required = false;
-                    cloudPassword.value = '';
-                }
-                validateScreen3();
+            personaRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    // Reset all check indicators for persona cards
+                    document.querySelectorAll('#screen3 .persona-check-indicator').forEach(indicator => {
+                        indicator.classList.remove('bg-primary', 'border-primary');
+                        indicator.classList.add('border-outline-variant');
+                        indicator.querySelector('span').classList.add('opacity-0');
+                    });
+
+                    // Set active check indicator
+                    if (radio.checked) {
+                        const parent = radio.closest('label');
+                        const indicator = parent.querySelector('.persona-check-indicator');
+                        indicator.classList.remove('border-outline-variant');
+                        indicator.classList.add('bg-primary', 'border-primary');
+                        indicator.querySelector('span').classList.remove('opacity-0');
+                    }
+                    validateScreen3();
+                });
             });
 
+            accountTypeRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    // Reset all check indicators for account type
+                    document.querySelectorAll('#screen3 .account-type-indicator').forEach(indicator => {
+                        indicator.classList.remove('bg-primary', 'border-primary');
+                        indicator.classList.add('border-outline-variant');
+                        indicator.querySelector('span').classList.add('opacity-0');
+                    });
+
+                    // Set active check indicator
+                    if (radio.checked) {
+                        const parent = radio.closest('label');
+                        const indicator = parent.querySelector('.account-type-indicator');
+                        indicator.classList.remove('border-outline-variant');
+                        indicator.classList.add('bg-primary', 'border-primary');
+                        indicator.querySelector('span').classList.remove('opacity-0');
+                        
+                        if (radio.value === 'cloud') {
+                            newProfileCloudPasswordSection.classList.remove('hidden');
+                            newProfileCloudPassword.disabled = false;
+                            newProfileCloudPassword.required = true;
+                            syncEnabledInput.value = 'true';
+                        } else {
+                            newProfileCloudPasswordSection.classList.add('hidden');
+                            newProfileCloudPassword.disabled = true;
+                            newProfileCloudPassword.required = false;
+                            newProfileCloudPassword.value = '';
+                            syncEnabledInput.value = 'false';
+                        }
+                    }
+                    validateScreen3();
+                });
+            });
+
+            function toggleInputsForPath() {
+                if (path === 'cloud_user') {
+                    // Disable screen 3 inputs so they aren't submitted
+                    fullName.disabled = true;
+                    fullName.required = false;
+                    usernameInput.disabled = true;
+                    usernameInput.required = false;
+                    newProfileCloudPassword.disabled = true;
+                    newProfileCloudPassword.required = false;
+                    personaRadios.forEach(r => { r.disabled = true; r.required = false; });
+                    profilePic.disabled = true;
+                    accountTypeRadios.forEach(r => { r.disabled = true; r.required = false; });
+
+                    // Enable screen 2 cloud inputs & hidden inputs
+                    cloudUsername.disabled = false;
+                    cloudPassword.disabled = false;
+                    hiddenNameInput.disabled = false;
+                    hiddenPersonaInput.disabled = false;
+                    syncEnabledInput.value = 'true';
+                } else {
+                    // Enable screen 3 inputs
+                    fullName.disabled = false;
+                    fullName.required = true;
+                    usernameInput.disabled = false;
+                    usernameInput.required = true;
+                    personaRadios.forEach(r => { r.disabled = false; r.required = true; });
+                    profilePic.disabled = false;
+                    accountTypeRadios.forEach(r => { r.disabled = false; r.required = true; });
+
+                    // Disable screen 2 cloud inputs & hidden inputs
+                    cloudUsername.disabled = true;
+                    cloudPassword.disabled = true;
+                    hiddenNameInput.disabled = true;
+                    hiddenPersonaInput.disabled = true;
+                    
+                    // Sync Enabled depends on Account Type selection
+                    const selectedType = document.querySelector('input[name="account_type"]:checked');
+                    if (selectedType && selectedType.value === 'cloud') {
+                        syncEnabledInput.value = 'true';
+                        newProfileCloudPassword.disabled = false;
+                        newProfileCloudPassword.required = true;
+                    } else {
+                        syncEnabledInput.value = 'false';
+                        newProfileCloudPassword.disabled = true;
+                        newProfileCloudPassword.required = false;
+                    }
+                }
+            }
+
             function validateScreen3() {
-                const isNameOk = fullName.value.trim() !== '';
-                const isUserOk = usernameInput.value.trim() !== '';
-                const isPassOk = !cloudSyncToggle.checked || (cloudPassword.value.trim() !== '');
-                btnNext3.disabled = !(isNameOk && isUserOk && isPassOk);
+                if (path === 'new_profile') {
+                    const isPersonaSelected = document.querySelector('input[name="persona"]:checked') !== null;
+                    const isNameOk = fullName.value.trim() !== '';
+                    const isUserOk = usernameInput.value.trim() !== '';
+                    
+                    const selectedType = document.querySelector('input[name="account_type"]:checked');
+                    const isTypeSelected = selectedType !== null;
+                    const isPassOk = !isTypeSelected || (selectedType.value !== 'cloud') || (newProfileCloudPassword.value.trim() !== '');
+                    
+                    btnNext3.disabled = !(isPersonaSelected && isNameOk && isUserOk && isTypeSelected && isPassOk);
+                } else {
+                    btnNext3.disabled = false;
+                }
             }
 
             fullName.addEventListener('input', validateScreen3);
             usernameInput.addEventListener('input', validateScreen3);
-            cloudPassword.addEventListener('input', validateScreen3);
+            newProfileCloudPassword.addEventListener('input', validateScreen3);
+            personaRadios.forEach(r => r.addEventListener('change', validateScreen3));
 
             // Trigger initial validation
             validateScreen3();
-
             btnNext3.addEventListener('click', () => navigate(1));
 
             // Screen 4 Logic (PIN)
@@ -555,7 +768,24 @@
             // Navigation
             function navigate(direction) {
                 screens[currentScreen].classList.remove('active');
-                currentScreen += direction;
+                
+                if (currentScreen === 1 && direction === 1) {
+                    // Moving forward from screen 2
+                    if (path === 'cloud_user') {
+                        currentScreen = 3; // jump to screen 4
+                    } else {
+                        currentScreen = 2; // go to screen 3
+                    }
+                } else if (currentScreen === 3 && direction === -1) {
+                    // Moving backward from screen 4
+                    if (path === 'cloud_user') {
+                        currentScreen = 1; // jump to screen 2
+                    } else {
+                        currentScreen = 2; // go to screen 3
+                    }
+                } else {
+                    currentScreen += direction;
+                }
                 
                 if (currentScreen > 0) {
                     backBtn.classList.remove('invisible');
