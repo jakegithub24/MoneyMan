@@ -8,7 +8,7 @@ from db import get_db_connection, init_db, hash_pin, verify_pin
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.secret_key = 'moneyman_secret_key_for_security_and_sessions'
+app.secret_key = os.environ.get('SECRET_KEY', 'moneyman_secret_key_for_security_and_sessions')
 CORS(app, supports_credentials=True)
 
 # Ensure the database is initialized before any requests
@@ -379,12 +379,7 @@ def dashboard():
             'icon': 'calculate'
         })
         
-    # If no EMIs, feed standard mock bills
-    if not bills:
-        bills = [
-            {'title': 'Electricity Bill', 'due': 'Due in 5 days', 'amount': '1,300', 'icon': 'bolt'},
-            {'title': 'Broadband Wifi', 'due': 'Due in 10 days', 'amount': '799', 'icon': 'wifi'}
-        ]
+
         
     # 4. Generate AI Insight dynamically
     ai_insight = "You're doing great! Keep tracking your transactions to build healthy financial habits."
