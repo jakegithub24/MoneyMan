@@ -304,6 +304,58 @@ def settings_update_sync():
     status_str = "enabled" if sync_enabled == 1 else "disabled"
     return redirect(url_for('settings', success=f"Online sync settings saved. Profile sync is now {status_str}."))
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if not is_user_onboarded():
+        return redirect(url_for('onboarding'))
+        
+    profile = get_user_profile()
+    conn = get_db_connection()
+    user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+    
+    success = request.args.get('success')
+    error = request.args.get('error')
+    
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        if not name:
+            conn.close()
+            return redirect(url_for('profile', error='Name cannot be empty.'))
+            
+        # Handle profile picture upload
+        profile_pic_path = user['profile_pic']
+        if 'profile_pic' in request.files:
+            file = request.files['profile_pic']
+            if file and file.filename != '':
+                upload_folder = os.path.join(app.root_path, 'static', 'uploads')
+                os.makedirs(upload_folder, exist_ok=True)
+                from werkzeug.utils import secure_filename
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(upload_folder, filename)
+                file.save(file_path)
+                profile_pic_path = f"/static/uploads/{filename}"
+                
+        # Update user
+        conn.execute("UPDATE users SET name = ?, profile_pic = ? WHERE id = ?", (name, profile_pic_path, user['id']))
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('profile', success='Profile updated successfully.'))
+        
+    conn.close()
+    
+    return render_template(
+        'profile.html',
+        username=profile['username'],
+        user_role=profile['user_role'],
+        current_name=user['name'],
+        current_username=user['username'],
+        profile_pic=user['profile_pic'],
+        success=success,
+        error=error,
+        active_page='profile'
+    )
+
 @app.route('/dashboard')
 def dashboard():
     if not is_user_onboarded():

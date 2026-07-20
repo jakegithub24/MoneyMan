@@ -537,7 +537,7 @@
                     
                     <!-- Dropdown Menu -->
                     <div id="profileDropdownMenu" class="hidden absolute bottom-full left-4 mb-2 w-56 bg-surface-light dark:bg-surface-dark border border-outline-variant/20 rounded-2xl shadow-xl z-50 overflow-hidden py-1">
-                        <a href="{{ url_for('dashboard') if url_for else '/dashboard' }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold">
+                        <a href="{{ url_for('profile') if url_for else '/profile' }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold">
                             <span class="material-symbols-outlined text-[20px] text-primary">person</span>
                             <span>Profile</span>
                         </a>
@@ -581,7 +581,7 @@
                         
                         <!-- Mobile Dropdown Menu -->
                         <div id="mobileProfileMenu" class="hidden absolute top-full right-0 mt-2 w-56 bg-surface-light dark:bg-surface-dark border border-outline-variant/20 rounded-2xl shadow-xl z-50 overflow-hidden py-1">
-                            <a href="{{ url_for('dashboard') if url_for else '/dashboard' }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold">
+                            <a href="{{ url_for('profile') if url_for else '/profile' }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-on-surface dark:text-text-main-dark text-sm font-semibold">
                                 <span class="material-symbols-outlined text-[20px] text-primary">person</span>
                                 <span>Profile</span>
                             </a>

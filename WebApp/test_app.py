@@ -497,5 +497,29 @@ class MoneyManTestCase(unittest.TestCase):
         conn.close()
         self.assertEqual(user_count, 0)
 
+    def test_profile_get_view(self):
+        """Test profile page rendering and showing current name & username."""
+        response = self.client.get('/profile')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Edit Profile', response.data)
+        self.assertIn(b'Ramesh Kumar', response.data)
+        self.assertIn(b'ramesh123', response.data)
+
+    def test_profile_post_update(self):
+        """Test that posting to profile updates the name and keeps username persistent."""
+        response = self.client.post('/profile', data={
+            'name': 'Ramesh Kumar Updated'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Profile updated successfully', response.data)
+        
+        # Verify db entry
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+        conn.close()
+        self.assertEqual(user['name'], 'Ramesh Kumar Updated')
+        self.assertEqual(user['username'], 'ramesh123') # remains persistent
+
 if __name__ == '__main__':
     unittest.main()
