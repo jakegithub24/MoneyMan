@@ -42,6 +42,7 @@ class MoneyManTestCase(unittest.TestCase):
         
         with self.client.session_transaction() as sess:
             sess['logged_in'] = True
+            sess['user_id'] = 1
 
     def tearDown(self):
         # Clear database connection and delete file
@@ -316,8 +317,8 @@ class MoneyManTestCase(unittest.TestCase):
     def test_list_transactions(self):
         """Test listing transactions with type/category filters."""
         conn = get_db_connection()
-        conn.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('income', 1000.0, 'other', '2026-07-01', 'Gift')")
-        conn.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('expense', 200.0, 'food', '2026-07-02', 'Snack')")
+        conn.execute("INSERT INTO transactions (user_id, type, amount, category, date, note) VALUES (1, 'income', 1000.0, 'other', '2026-07-01', 'Gift')")
+        conn.execute("INSERT INTO transactions (user_id, type, amount, category, date, note) VALUES (1, 'expense', 200.0, 'food', '2026-07-02', 'Snack')")
         conn.commit()
         conn.close()
         
@@ -335,7 +336,7 @@ class MoneyManTestCase(unittest.TestCase):
         """Test editing an existing transaction."""
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('expense', 500.0, 'other', '2026-07-01', 'Old Note')")
+        cursor.execute("INSERT INTO transactions (user_id, type, amount, category, date, note) VALUES (1, 'expense', 500.0, 'other', '2026-07-01', 'Old Note')")
         tx_id = cursor.lastrowid
         conn.commit()
         conn.close()
@@ -367,7 +368,7 @@ class MoneyManTestCase(unittest.TestCase):
         """Test deleting a transaction."""
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('expense', 100.0, 'other', '2026-07-01', 'To Delete')")
+        cursor.execute("INSERT INTO transactions (user_id, type, amount, category, date, note) VALUES (1, 'expense', 100.0, 'other', '2026-07-01', 'To Delete')")
         tx_id = cursor.lastrowid
         conn.commit()
         conn.close()
@@ -383,8 +384,8 @@ class MoneyManTestCase(unittest.TestCase):
     def test_ai_analysis_view(self):
         """Test AI analysis page rendering and fallback report generation."""
         conn = get_db_connection()
-        conn.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('income', 10000.0, 'other', '2026-07-01', 'Salary')")
-        conn.execute("INSERT INTO transactions (type, amount, category, date, note) VALUES ('expense', 4000.0, 'food', '2026-07-02', 'Groceries')")
+        conn.execute("INSERT INTO transactions (user_id, type, amount, category, date, note) VALUES (1, 'income', 10000.0, 'other', '2026-07-01', 'Salary')")
+        conn.execute("INSERT INTO transactions (user_id, type, amount, category, date, note) VALUES (1, 'expense', 4000.0, 'food', '2026-07-02', 'Groceries')")
         conn.commit()
         conn.close()
         
@@ -487,15 +488,79 @@ class MoneyManTestCase(unittest.TestCase):
         self.assertEqual(user['sync_enabled'], 1)
 
     def test_logout_profile_reset(self):
-        """Test that logout completely resets profile and redirects to onboarding."""
+        """Test that logout sets logged_out state, and attempting to log back in deletes the data."""
+        # 1. Logout:
         response = self.client.get('/logout', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Your Money', response.data)
         
+        # Verify user still exists but is marked as logged out
         conn = get_db_connection()
-        user_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        user = conn.execute("SELECT * FROM users WHERE user_id = '1'").fetchone()
+        self.assertEqual(user['is_logged_out'], 1)
         conn.close()
-        self.assertEqual(user_count, 0)
+        
+        # 2. Try to log back in:
+        # Simulate lockscreen unlocking attempt by having user_id in session
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = '1'
+            sess['logged_in'] = False
+            
+        response = self.client.post('/login', data={'pin': '1234'}, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Offline users cannot log in once logged out', response.data)
+        
+        # Verify user username is updated to ramesh123_del
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users WHERE user_id = '1'").fetchone()
+        self.assertEqual(user['username'], 'ramesh123_del')
+        
+        # Verify data is deleted
+        tx_count = conn.execute("SELECT COUNT(*) FROM transactions WHERE user_id = '1'").fetchone()[0]
+        self.assertEqual(tx_count, 0)
+        conn.close()
+
+    def test_username_uniqueness(self):
+        """Test that usernames cannot be shared between online and offline users, and deleted usernames are reusable."""
+        # Seeded user username is 'ramesh123'
+        # Trying to onboard a new user with the same username should fail
+        response = self.client.post('/onboarding', data={
+            'persona': 'student',
+            'name': 'New Ramesh',
+            'username': 'ramesh123',
+            'pin': '1111',
+            'already_cloud': 'no'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Username is already taken', response.data)
+        
+        # Trying to restore/onboard as a cloud user with ramesh123:
+        # Since ramesh123 in the DB is offline (sync_enabled = 0), attempting to restore it
+        # should trigger the offline login restriction: deletes the data and flags username.
+        response = self.client.post('/onboarding', data={
+            'persona': 'student',
+            'name': 'Ramesh Kumar',
+            'username': 'ramesh123',
+            'pin': '1234',
+            'already_cloud': 'yes'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Offline users cannot log in once logged out', response.data)
+        
+        # Now that ramesh123 has been flagged as ramesh123_del, the username 'ramesh123' should be available again!
+        response = self.client.post('/onboarding', data={
+            'persona': 'student',
+            'name': 'New Ramesh',
+            'username': 'ramesh123',
+            'pin': '1111',
+            'already_cloud': 'no'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        # Should succeed and redirect to dashboard
+        self.assertIn(b'Dashboard', response.data)
 
     def test_profile_get_view(self):
         """Test profile page rendering and showing current name & username."""
@@ -520,6 +585,36 @@ class MoneyManTestCase(unittest.TestCase):
         conn.close()
         self.assertEqual(user['name'], 'Ramesh Kumar Updated')
         self.assertEqual(user['username'], 'ramesh123') # remains persistent
+
+    def test_error_handling_invalid_inputs(self):
+        """Test that invalid numeric inputs do not crash the app, but instead return clean flashes/redirects."""
+        # 1. Add transaction with invalid amount
+        response = self.client.post('/transaction/add', data={
+            'type': 'expense',
+            'amount': 'invalid-amount',
+            'category': 'food',
+            'date': '2026-07-21'
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Invalid amount format', response.data)
+        
+        # 2. Add budget with invalid limit
+        response = self.client.post('/budgets/create', data={
+            'category': 'food',
+            'limit': 'invalid-limit'
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Invalid limit format', response.data)
+
+        # 3. Create EMI with invalid total_months/amount
+        response = self.client.post('/emi/create', data={
+            'name': 'Home Loan',
+            'bank': 'SBI',
+            'amount': 'invalid-amount',
+            'total_months': 'invalid-months'
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Invalid numeric format', response.data)
 
 if __name__ == '__main__':
     unittest.main()

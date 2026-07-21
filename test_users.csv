@@ -1,0 +1,24 @@
+Full Name,Type,Username,Pin,Cloud Password,Persona,Expected Result
+Asha Khan,Local,ashakhan1,4821,,Student,Valid
+Ravi Mehta,Local,ravimehta7,9056,,Gig-worker,Valid
+Tara Singh,Local,tarasingh9,2714,,Elderly,Valid
+Neha Roy,Local,neharoy12,6380,,Student,Valid
+Imran Ali,Local,imranali88,1149,,Gig-worker,Valid
+Sita Devi,Local,sitadevi5,7602,,Elderly,Valid
+Asha Khan,Cloud,ashakhan1,4821,Asha@2026!,Student,Valid
+Ravi Mehta,Cloud,ravimehta7,9056,Ravi#Sync11,Gig-worker,Valid
+Tara Singh,Cloud,tarasingh9,2714,Tara$Cloud77,Elderly,Valid
+Neha Roy,Cloud,neharoy12,6380,Neha!Pass22,Student,Valid
+Imran Ali,Cloud,imranali88,1149,Imran@Test88,Gig-worker,Valid
+Sita Devi,Cloud,sitadevi5,7602,Sita*Login09,Elderly,Valid
+Asha Khan,Local,ashakhan1,4821,,Student,Valid
+Asha,Local,ashakhan1,4821,,Student,Reject: full name missing last name
+Asha Khan 1,Local,ashakhan1,4821,,Student,Reject: invalid full name
+Student User,Local,Student123,4821,,Student,Reject: uppercase in username
+Student User,Local,student_123,4821,,Student,Reject: underscore in username
+Very Long Name User Test,Local,verylongusernametest1234567890,4821,,Gig-worker,Reject: username over 30 chars
+Cloud Max,Cloud,cloudmaxuser30charsabcd123456,9999,MaxPass@123,Student,Boundary test
+Cloud Bad Pass,Cloud,cloudbadpass1,1111,abc,Gig-worker,Reject: weak/too short password
+Cloud Special OK,Cloud,cloudspecial2,2222,P@ss-W0rd!2026,Elderly,Valid if special chars allowed
+Bad Name Num,Cloud,badname1,3333,Pass@1234,Student,Reject: number in full name
+Empty PIN,Local,nopinuser,,,Elderly,Reject: missing pin

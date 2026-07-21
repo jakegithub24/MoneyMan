@@ -165,6 +165,12 @@
             
             <!-- Content Area -->
             <div class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-container-margin pb-6 sm:pb-stack-lg relative">
+                {% if error or request.args.get('error') %}
+                <div class="p-4 mb-4 rounded-2xl bg-expense-red-subtle dark:bg-error/20 border border-error text-error font-label-lg text-label-lg flex items-center gap-3">
+                    <span class="material-symbols-outlined">error</span>
+                    <span>{{ error or request.args.get('error') }}</span>
+                </div>
+                {% endif %}
                 
                 <!-- Screen 1: Welcome -->
                 <section class="onboarding-screen active flex-col min-h-full justify-between pt-6 sm:pt-stack-lg" id="screen1">
