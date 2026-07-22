@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import uuid
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 
 # Import database connection helpers
 from db import get_db_connection, init_db, hash_pin, verify_pin
@@ -21,7 +21,7 @@ with app.app_context():
 
 @app.before_request
 def check_auth():
-    allowed_endpoints = ['onboarding', 'login', 'static']
+    allowed_endpoints = ['onboarding', 'login', 'static', 'validate_cloud_user']
     if request.endpoint in allowed_endpoints:
         return
         
@@ -179,35 +179,35 @@ def onboarding():
                 is_existing_cloud_path = (request.form.get('already_cloud') == 'yes')
                 
                 if is_existing_cloud_path:
-                    hashed_pin = hash_pin(pin)
-                    hashed_password = hash_pin(password) if password else None
-                    
-                    if existing_user:
-                        # Check if it was an offline user trying to log in/restore
-                        if existing_user['sync_enabled'] == 0:
-                            # Offline users can't login once logged out. If they do so, their data is deleted.
-                            del_username = f"{existing_user['username']}_del"
-                            conn.execute("UPDATE users SET username = ? WHERE user_id = ?", (del_username, existing_user['user_id']))
-                            conn.execute("DELETE FROM transactions WHERE user_id = ?", (existing_user['user_id'],))
-                            conn.execute("DELETE FROM budgets WHERE user_id = ?", (existing_user['user_id'],))
-                            conn.execute("DELETE FROM emis WHERE user_id = ?", (existing_user['user_id'],))
-                            conn.execute("DELETE FROM goals WHERE user_id = ?", (existing_user['user_id'],))
-                            conn.commit()
-                            return render_template('onboarding.html', error="Offline users cannot log in once logged out. Your local data has been deleted.")
-                        else:
-                            # Online cloud sync user restore
-                            conn.execute(
-                                "UPDATE users SET pin = ?, password = ?, is_onboarded = 1, sync_enabled = 1, is_logged_out = 0 WHERE user_id = ?",
-                                (hashed_pin, hashed_password, existing_user['user_id'])
-                            )
-                            user_id = existing_user['user_id']
+                    if not existing_user:
+                        return render_template('onboarding.html', error="User does not exists")
+                        
+                    # Check if it was an offline user trying to log in/restore
+                    if existing_user['sync_enabled'] == 0:
+                        # Offline users can't login once logged out. If they do so, their data is deleted.
+                        del_username = f"{existing_user['username']}_del"
+                        conn.execute("UPDATE users SET username = ? WHERE user_id = ?", (del_username, existing_user['user_id']))
+                        conn.execute("DELETE FROM transactions WHERE user_id = ?", (existing_user['user_id'],))
+                        conn.execute("DELETE FROM budgets WHERE user_id = ?", (existing_user['user_id'],))
+                        conn.execute("DELETE FROM emis WHERE user_id = ?", (existing_user['user_id'],))
+                        conn.execute("DELETE FROM goals WHERE user_id = ?", (existing_user['user_id'],))
+                        conn.commit()
+                        return render_template('onboarding.html', error="Offline users cannot log in once logged out. Your local data has been deleted.")
                     else:
-                        # If they tried to log in/restore as a non-existing user, or restore from cloud sync
-                        user_id = str(uuid.uuid4())
+                        # Validate cloud password for existing cloud user
+                        if existing_user['password']:
+                            if not password or not verify_pin(password, existing_user['password']):
+                                return render_template('onboarding.html', error="Invalid cloud password. Please try again.")
+                                
+                        hashed_pin = hash_pin(pin)
+                        hashed_password = hash_pin(password) if password else existing_user['password']
+                        
+                        # Online cloud sync user restore
                         conn.execute(
-                            "INSERT INTO users (user_id, name, username, persona, pin, password, profile_pic, is_onboarded, sync_enabled, is_logged_out) VALUES (?, ?, ?, ?, ?, ?, None, 1, 1, 0)",
-                            (user_id, username, username, persona, hashed_pin, hashed_password)
+                            "UPDATE users SET pin = ?, password = ?, is_onboarded = 1, sync_enabled = 1, is_logged_out = 0 WHERE user_id = ?",
+                            (hashed_pin, hashed_password, existing_user['user_id'])
                         )
+                        user_id = existing_user['user_id']
                 else:
                     # New profile path
                     if existing_user:
@@ -254,6 +254,36 @@ def onboarding():
     except Exception as e:
         app.logger.error(f"Onboarding GET error: {e}")
     return render_template('onboarding.html', error=request.args.get('error'))
+
+@app.route('/api/validate-cloud-user', methods=['POST'])
+def validate_cloud_user():
+    try:
+        data = request.get_json(silent=True) or request.form
+        username = (data.get('username') or '').strip()
+        password = data.get('password') or ''
+        
+        if not username:
+            return jsonify({'valid': False, 'error': 'User does not exists'}), 400
+            
+        conn = get_db_connection()
+        try:
+            existing_user = conn.execute("SELECT * FROM users WHERE username = ? AND username NOT LIKE '%_del'", (username,)).fetchone()
+            if not existing_user:
+                return jsonify({'valid': False, 'error': 'User does not exists'}), 400
+                
+            if existing_user['sync_enabled'] == 0:
+                return jsonify({'valid': False, 'error': 'Offline users cannot log in once logged out. Your local data has been deleted.'}), 400
+                
+            if existing_user['password']:
+                if not password or not verify_pin(password, existing_user['password']):
+                    return jsonify({'valid': False, 'error': 'Invalid cloud password. Please try again.'}), 400
+                    
+            return jsonify({'valid': True})
+        finally:
+            conn.close()
+    except Exception as e:
+        app.logger.error(f"Validate cloud user error: {e}")
+        return jsonify({'valid': False, 'error': f'An error occurred: {str(e)}'}), 500
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

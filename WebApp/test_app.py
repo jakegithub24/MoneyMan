@@ -122,33 +122,109 @@ class MoneyManTestCase(unittest.TestCase):
         self.assertEqual(user['is_onboarded'], 1)
         conn.close()
 
-    def test_onboarding_cloud_user_path(self):
-        """Test onboarding submission via existing cloud user path."""
+    def test_api_validate_cloud_user_endpoint(self):
+        """Test the /api/validate-cloud-user API endpoint for pre-validation."""
+        conn = get_db_connection()
+        conn.execute("DELETE FROM users")
+        from db import hash_pin
+        conn.execute(
+            "INSERT INTO users (user_id, name, username, persona, pin, password, is_onboarded, sync_enabled) VALUES (?, ?, ?, ?, ?, ?, 1, 1)",
+            ('cloud_u1', 'Cloud User', 'existing_cloud_user', 'student', hash_pin('1111'), hash_pin('validpass123'))
+        )
+        conn.commit()
+        conn.close()
+
+        # 1. Non-existent user
+        res1 = self.client.post('/api/validate-cloud-user', json={'username': 'no_such_user', 'password': '123'})
+        self.assertEqual(res1.status_code, 400)
+        data1 = res1.get_json()
+        self.assertFalse(data1['valid'])
+        self.assertEqual(data1['error'], 'User does not exists')
+
+        # 2. Invalid password
+        res2 = self.client.post('/api/validate-cloud-user', json={'username': 'existing_cloud_user', 'password': 'wrongpassword'})
+        self.assertEqual(res2.status_code, 400)
+        data2 = res2.get_json()
+        self.assertFalse(data2['valid'])
+        self.assertIn('Invalid cloud password', data2['error'])
+
+        # 3. Valid credentials
+        res3 = self.client.post('/api/validate-cloud-user', json={'username': 'existing_cloud_user', 'password': 'validpass123'})
+        self.assertEqual(res3.status_code, 200)
+        data3 = res3.get_json()
+        self.assertTrue(data3['valid'])
+
+    def test_onboarding_cloud_user_non_existent(self):
+        """Test onboarding submission for a non-existing cloud sync user."""
         # Clear users first
         conn = get_db_connection()
         conn.execute("DELETE FROM users")
         conn.commit()
         conn.close()
         
-        # Submit onboarding with cloud sync credentials and defaults
+        # Submit onboarding with already_cloud='yes' for non-existing user
         response = self.client.post('/onboarding', data={
-            'sync_enabled': 'true',
-            'username': 'existing_cloud_user',
-            'password': 'cloud_password123',
-            'name': 'existing_cloud_user',
-            'persona': 'student',
+            'already_cloud': 'yes',
+            'username': 'non_existent_cloud_user',
+            'password': 'somepassword',
             'pin': '4321'
         }, follow_redirects=True)
         
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'existing_cloud_user', response.data)
-        
-        # Verify db entry
+        self.assertIn(b'User does not exists', response.data)
+
+    def test_onboarding_cloud_user_invalid_password(self):
+        """Test onboarding submission for an existing cloud sync user with wrong password."""
         conn = get_db_connection()
-        user = conn.execute("SELECT * FROM users LIMIT 1").fetchone()
+        conn.execute("DELETE FROM users")
+        from db import hash_pin
+        conn.execute(
+            "INSERT INTO users (user_id, name, username, persona, pin, password, is_onboarded, sync_enabled) VALUES (?, ?, ?, ?, ?, ?, 1, 1)",
+            ('cloud_u1', 'Cloud User', 'existing_cloud_user', 'student', hash_pin('1111'), hash_pin('correctpass'))
+        )
+        conn.commit()
+        conn.close()
+
+        # Submit onboarding with wrong password
+        response = self.client.post('/onboarding', data={
+            'already_cloud': 'yes',
+            'username': 'existing_cloud_user',
+            'password': 'wrongpassword',
+            'pin': '4321'
+        }, follow_redirects=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Invalid cloud password', response.data)
+
+    def test_onboarding_cloud_user_path(self):
+        """Test onboarding submission via existing cloud user path with valid credentials."""
+        conn = get_db_connection()
+        conn.execute("DELETE FROM users")
+        from db import hash_pin
+        conn.execute(
+            "INSERT INTO users (user_id, name, username, persona, pin, password, is_onboarded, sync_enabled) VALUES (?, ?, ?, ?, ?, ?, 1, 1)",
+            ('cloud_u1', 'Cloud User', 'existing_cloud_user', 'student', hash_pin('1111'), hash_pin('cloud_password123'))
+        )
+        conn.commit()
+        conn.close()
+        
+        # Submit onboarding with cloud sync credentials and defaults
+        response = self.client.post('/onboarding', data={
+            'already_cloud': 'yes',
+            'sync_enabled': 'true',
+            'username': 'existing_cloud_user',
+            'password': 'cloud_password123',
+            'pin': '4321'
+        }, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Cloud User', response.data)
+        
+        # Verify db entry updated with new pin
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users WHERE username='existing_cloud_user'").fetchone()
         self.assertIsNotNone(user)
         self.assertEqual(user['username'], 'existing_cloud_user')
-        self.assertEqual(user['name'], 'existing_cloud_user')
         self.assertEqual(user['sync_enabled'], 1)
         self.assertTrue(verify_pin('4321', user['pin']))
         self.assertTrue(verify_pin('cloud_password123', user['password']))

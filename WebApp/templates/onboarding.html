@@ -207,9 +207,14 @@
                 
                 <!-- Screen 2: Already a Cloud User? -->
                 <section class="onboarding-screen flex-col min-h-full pt-4 sm:pt-stack-md" id="screen2">
-                    <div class="space-y-stack-sm mb-6 text-center">
+                    <div class="space-y-stack-sm mb-4 text-center">
                         <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface dark:text-text-main-dark">Already a cloud user?</h2>
                         <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">Opt in to connect and sync your profile.</p>
+                    </div>
+                    
+                    <div id="screen2Error" class="hidden p-4 mb-4 rounded-2xl bg-expense-red-subtle dark:bg-error/20 border border-error text-error font-label-lg text-label-lg flex items-center gap-3">
+                        <span class="material-symbols-outlined">error</span>
+                        <span id="screen2ErrorText"></span>
                     </div>
                     
                     <div class="flex flex-col space-y-gutter flex-1">
@@ -531,7 +536,24 @@
                 });
             });
 
+            const screen2Error = document.getElementById('screen2Error');
+            const screen2ErrorText = document.getElementById('screen2ErrorText');
+
+            function showScreen2Error(msg) {
+                if (screen2Error && screen2ErrorText) {
+                    screen2ErrorText.textContent = msg;
+                    screen2Error.classList.remove('hidden');
+                }
+            }
+
+            function hideScreen2Error() {
+                if (screen2Error) {
+                    screen2Error.classList.add('hidden');
+                }
+            }
+
             function validateScreen2() {
+                hideScreen2Error();
                 if (path === 'cloud_user') {
                     const userOk = cloudUsername.value.trim() !== '';
                     const passOk = cloudPassword.value.trim() !== '';
@@ -546,7 +568,38 @@
 
             cloudUsername.addEventListener('input', validateScreen2);
             cloudPassword.addEventListener('input', validateScreen2);
-            btnNext2.addEventListener('click', () => navigate(1));
+            
+            btnNext2.addEventListener('click', async () => {
+                if (path === 'cloud_user') {
+                    hideScreen2Error();
+                    btnNext2.disabled = true;
+                    btnNext2.innerHTML = `<span class="material-symbols-outlined animate-spin text-[24px]">progress_activity</span>`;
+                    try {
+                        const res = await fetch('/api/validate-cloud-user', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                username: cloudUsername.value.trim(),
+                                password: cloudPassword.value.trim()
+                            })
+                        });
+                        const data = await res.json();
+                        btnNext2.innerHTML = 'Continue';
+                        btnNext2.disabled = false;
+                        if (res.ok && data.valid) {
+                            navigate(1);
+                        } else {
+                            showScreen2Error(data.error || 'User validation failed.');
+                        }
+                    } catch (err) {
+                        btnNext2.innerHTML = 'Continue';
+                        btnNext2.disabled = false;
+                        showScreen2Error('Network or server error occurred.');
+                    }
+                } else {
+                    navigate(1);
+                }
+            });
 
             // Screen 3 Logic (Create Profile)
             const fullName = document.getElementById('fullName');
