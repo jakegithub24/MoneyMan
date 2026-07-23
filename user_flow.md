@@ -19,7 +19,7 @@ The navigation shell is defined in the base template: [base.html](file:///home/c
 | `/ai-analysis` | Sidebar: "AI Insights" | Bottom Nav: "AI" | Authenticated (PIN Entered) |
 | `/learn` | Sidebar: "Learn & Glossary" | **None (Read Audit below)** | Authenticated (PIN Entered) |
 | `/settings` | Sidebar: "Settings" | Profile Menu Only | Authenticated (PIN Entered) |
-| `/onboarding` | Sidebar: "Launch Onboarding"| **None** | Unauthenticated (Clears DB) |
+| `/onboarding` | **None (Initial Redirect)** | **None** | Unauthenticated (Clears DB) |
 
 ---
 

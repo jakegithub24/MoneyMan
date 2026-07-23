@@ -496,12 +496,6 @@
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if active_page == 'settings' %}1{% else %}0{% endif %};">settings</span>
                     <span>Settings</span>
                 </a>
-
-                <a href="{{ url_for('onboarding') if url_for else '/onboarding' }}" 
-                   class="sidebar-nav-link flex items-center px-4 py-3 rounded-xl gap-4 font-label-lg text-label-lg text-on-surface-variant dark:text-text-main-dark hover:bg-surface-container">
-                    <span class="material-symbols-outlined">badge</span>
-                    <span>Launch Onboarding</span>
-                </a>
             </nav>
             
             <!-- Sidebar Footer -->

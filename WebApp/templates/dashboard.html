@@ -28,56 +28,60 @@
 <!-- Summary Cards Grid -->
 <section class="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-stack-lg">
     <!-- Income Card -->
-    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between min-h-[140px] interactive-hover animate-fade-in-up stagger-1">
+    <a href="{{ url_for('transactions') if url_for else '/transactions' }}?type=income&category=all" 
+       class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between min-h-[140px] interactive-hover animate-fade-in-up stagger-1 cursor-pointer group">
         <div class="flex items-center gap-3 text-primary dark:text-primary-fixed mb-2">
             <div class="w-9 h-9 rounded-full bg-income-green-subtle dark:bg-primary/20 flex items-center justify-center">
                 <span class="material-symbols-outlined text-sm font-bold">arrow_downward</span>
             </div>
-            <span class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline">Income</span>
+            <span class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline group-hover:text-primary transition-colors">Income</span>
         </div>
         <div class="font-headline-md text-headline-md text-primary dark:text-primary-fixed font-bold mt-auto animate-counter">
             ₹{{ income | default("15,000") }}
         </div>
-    </div>
+    </a>
     
     <!-- Expense Card -->
-    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between min-h-[140px] interactive-hover animate-fade-in-up stagger-2">
+    <a href="{{ url_for('transactions') if url_for else '/transactions' }}?type=expense&category=all" 
+       class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between min-h-[140px] interactive-hover animate-fade-in-up stagger-2 cursor-pointer group">
         <div class="flex items-center gap-3 text-secondary mb-2">
             <div class="w-9 h-9 rounded-full bg-expense-red-subtle dark:bg-secondary/20 flex items-center justify-center">
                 <span class="material-symbols-outlined text-sm font-bold">arrow_upward</span>
             </div>
-            <span class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline">Expense</span>
+            <span class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline group-hover:text-secondary transition-colors">Expense</span>
         </div>
         <div class="font-headline-md text-headline-md text-secondary font-bold mt-auto animate-counter">
             ₹{{ expense | default("8,200") }}
         </div>
-    </div>
+    </a>
     
     <!-- Savings Card -->
-    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between min-h-[140px] interactive-hover animate-fade-in-up stagger-3">
+    <a href="{{ url_for('goals') if url_for else '/goals' }}" 
+       class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between min-h-[140px] interactive-hover animate-fade-in-up stagger-3 cursor-pointer group">
         <div class="flex items-center gap-3 text-tertiary mb-2">
             <div class="w-9 h-9 rounded-full bg-tertiary-fixed dark:bg-tertiary/20 flex items-center justify-center text-tertiary">
                 <span class="material-symbols-outlined text-sm font-bold">savings</span>
             </div>
-            <span class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline">Savings</span>
+            <span class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline group-hover:text-tertiary transition-colors">Savings</span>
         </div>
         <div class="font-headline-md text-headline-md text-on-surface dark:text-text-main-dark font-bold mt-auto animate-counter">
             ₹{{ savings | default("2,500") }}
         </div>
-    </div>
+    </a>
     
     <!-- Upcoming EMIs Card -->
-    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between min-h-[140px] interactive-hover animate-fade-in-up stagger-4">
+    <a href="{{ url_for('emi') if url_for else '/emi' }}" 
+       class="bg-surface-light dark:bg-surface-dark rounded-2xl p-card-padding shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between min-h-[140px] interactive-hover animate-fade-in-up stagger-4 cursor-pointer group">
         <div class="flex items-center gap-3 text-error mb-2">
             <div class="w-9 h-9 rounded-full bg-error-container dark:bg-error/20 flex items-center justify-center text-on-error-container">
                 <span class="material-symbols-outlined text-sm font-bold">event</span>
             </div>
-            <span class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline">Active EMIs</span>
+            <span class="font-label-lg text-label-lg text-on-surface-variant dark:text-outline group-hover:text-error transition-colors">Active EMIs</span>
         </div>
         <div class="font-headline-md text-headline-md text-on-surface dark:text-text-main-dark font-bold mt-auto animate-counter">
             ₹{{ active_emi_total | default("4,500") }}
         </div>
-    </div>
+    </a>
 </section>
 
 <!-- Content Grid -->
